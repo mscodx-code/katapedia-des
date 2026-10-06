@@ -1,0 +1,20 @@
+{
+  "name": "katapedia-des-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Katapedia DES — Platform Analisis Brand Tokoh (DED Caleg) & Produk berbasis Digital Electability Score",
+  "packageManager": "pnpm@12.4.2",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:generate": "pnpm --filter @katapedia/database generate",
+    "db:seed": "pnpm --filter @katapedia/database seed",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4",
+    "typescript": "^5.7.3"
+  }
+}

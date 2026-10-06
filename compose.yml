@@ -1,0 +1,103 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: katapedia-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: katapedia
+      POSTGRES_PASSWORD: katapedia123
+      POSTGRES_DB: katapedia_des
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U katapedia -d katapedia_des"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - katapedia-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: katapedia-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - katapedia-net
+
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: migrate
+    container_name: katapedia-migrate
+    environment:
+      DATABASE_URL: postgresql://katapedia:katapedia123@postgres:5432/katapedia_des?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - katapedia-net
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      target: runner
+    container_name: katapedia-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://katapedia:katapedia123@postgres:5432/katapedia_des?schema=public
+      REDIS_URL: redis://redis:6379
+      SESSION_SECRET: ${SESSION_SECRET:-katapedia-super-secret-session-key-development-minimum-32-chars-long}
+      STORAGE_PATH: /app/storage
+      AI_PROVIDER: ${AI_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:8b}
+    ports:
+      - "4000:4000"
+    volumes:
+      - storage_data:/app/storage
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - katapedia-net
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    container_name: katapedia-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    networks:
+      - katapedia-net
+
+networks:
+  katapedia-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+  storage_data:

@@ -1,0 +1,12 @@
+$ tsc && vite build
+vite v6.4.3 building for production...
+[2K[1Gtransforming (1) src/main.tsx[2K[1Gtransforming (5) src/index.css[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1G[2K[1Gtransforming (58) ../../node_modules/.pnpm/@remix-run+router@1.23.4/node_module[2K[1G[2K[1G[2K[1Gtransforming (1059) ../../node_modules/.pnpm/lucide-react@0.475.0_react@18.3.1/[2K[1Gtransforming (1723) ../../node_modules/.pnpm/scheduler@0.23.2/node_modules/sche[2K[1Gtransforming (1939) ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node[2K[1Gtransforming (1951) ../../node_modules/.pnpm/echarts@5.6.0/node_modules/echarts[2K[1Gtransforming (2145) ../../node_modules/.pnpm/size-sensor@1.0.3/node_modules/siz[2K[1G✓ 2237 modules transformed.
+[2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (0)...[2K[1Gcomputing gzip size (1)...[2K[1Gcomputing gzip size (2)...[2K[1Gcomputing gzip size (3)...[2K[1Gdist/index.html                     1.22 kB │ gzip:   0.69 kB
+dist/assets/index-ZOsVQtlo.css     38.30 kB │ gzip:   6.89 kB
+dist/assets/index-BgHODxD-.js   1,415.44 kB │ gzip: 448.22 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 7.34s

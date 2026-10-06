@@ -1,0 +1,32 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: katapedia-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - katapedia-net
+
+  model-init:
+    image: curlimages/curl:latest
+    container_name: katapedia-model-init
+    depends_on:
+      - ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Ollama to become ready..."
+        until curl -s http://ollama:11434/api/tags > /dev/null; do
+          sleep 2
+        done
+        echo "Pulling Qwen3:8b model..."
+        curl -X POST http://ollama:11434/api/pull -d '{"name": "qwen3:8b"}'
+        echo "Model initialization finished."
+    networks:
+      - katapedia-net
+
+volumes:
+  ollama_data:

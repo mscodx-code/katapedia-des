@@ -1,0 +1,367 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TenantMode {
+  TOKOH_CALEG
+  PRODUK_BRAND
+}
+
+enum UserRole {
+  PLATFORM_SUPERADMIN
+  DEPT_ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum ElectionLevel {
+  DPR_RI
+  DPRD_PROVINSI
+  DPRD_KAB_KOTA
+}
+
+enum CandidateStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED_REVIEW
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  TIKTOK
+}
+
+enum AccountVerificationStatus {
+  VERIFIED
+  PENDING_VERIFICATION
+  INVALID
+  INACTIVE
+  REVIEW
+}
+
+enum DataCoverageStatus {
+  COMPLETE
+  PARTIAL
+  INSUFFICIENT
+  STALE
+}
+
+enum BaselineCategory {
+  ABOVE_BASELINE
+  NEAR_BASELINE
+  BELOW_BASELINE
+}
+
+enum RoadmapQuadrant {
+  PRIORITAS_UTAMA
+  PERTAHANKAN
+  PANTAU
+  TUNDA
+}
+
+enum FindingReviewStatus {
+  PENDING_REVIEW
+  VERIFIED
+  DISPUTED
+  NEEDS_REVIEW
+}
+
+model Tenant {
+  id                 String              @id @default(uuid())
+  slug               String              @unique
+  name               String
+  mode               TenantMode          @default(TOKOH_CALEG)
+  electionLevelFocus ElectionLevel?
+  planName           String              @default("Enterprise PoC")
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  users              User[]
+  candidates         Candidate[]
+  platformAccounts   PlatformAccount[]
+  contents           Content[]
+  baselines          Baseline[]
+  desAssessments     DESAssessment[]
+  roadmapItems       RoadmapItem[]
+  cohortBenchmarks   CohortBenchmark[]
+  auditLogs          AuditLog[]
+
+  @@map("tenants")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  tenantId     String
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         UserRole   @default(ANALYST)
+  avatarUrl    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Candidate {
+  id            String             @id @default(uuid())
+  tenantId      String
+  candidateCode String
+  name          String
+  electionLevel ElectionLevel
+  province      String
+  regency       String?
+  dapil         String
+  party         String?
+  ballotNumber  Int?
+  status        CandidateStatus    @default(ACTIVE)
+  avatarUrl     String?
+  dataCoverage  DataCoverageStatus @default(PARTIAL)
+  lastSyncAt    DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  tenant        Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  accounts      PlatformAccount[]
+  contents      Content[]
+  baselines     Baseline[]
+  assessments   DESAssessment[]
+  roadmapItems  RoadmapItem[]
+
+  @@unique([tenantId, candidateCode])
+  @@index([tenantId, electionLevel, dapil])
+  @@map("candidates")
+}
+
+model PlatformAccount {
+  id                 String                    @id @default(uuid())
+  tenantId           String
+  candidateId        String
+  platform           SocialPlatform
+  handle             String
+  profileUrl         String
+  verificationStatus AccountVerificationStatus @default(PENDING_VERIFICATION)
+  followersCount     Int?                      @default(0)
+  followingCount     Int?                      @default(0)
+  totalPostsCount    Int?                      @default(0)
+  lastSyncAt         DateTime?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  tenant             Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidate          Candidate                 @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  contents           Content[]
+
+  @@unique([tenantId, platform, handle])
+  @@index([candidateId])
+  @@map("platform_accounts")
+}
+
+model Content {
+  id               String            @id @default(uuid())
+  tenantId         String
+  candidateId      String
+  accountId        String
+  platform         SocialPlatform
+  platformPostId   String
+  permalink        String
+  publishedAt      DateTime
+  caption          String
+  mediaType        String            @default("VIDEO_REEL")
+  durationSeconds  Int?
+  views            Int?              @default(0)
+  likes            Int?              @default(0)
+  comments         Int?              @default(0)
+  shares           Int?              @default(0)
+  saves            Int?              @default(0)
+  reach            Int?
+  baselineCategory BaselineCategory?
+  isWinningFormula Boolean           @default(false)
+  topicsJson       String            @default("[]")
+  sentiment        String            @default("UNKNOWN")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidate        Candidate         @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  account          PlatformAccount   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  metricSnapshots  ContentMetricSnapshot[]
+  evidences        AIEvidence[]
+
+  @@unique([tenantId, platform, platformPostId])
+  @@index([candidateId, publishedAt])
+  @@map("contents")
+}
+
+model ContentMetricSnapshot {
+  id         String   @id @default(uuid())
+  contentId  String
+  measuredAt DateTime @default(now())
+  views      Int?     @default(0)
+  likes      Int?     @default(0)
+  comments   Int?     @default(0)
+  shares     Int?     @default(0)
+  saves      Int?     @default(0)
+  reach      Int?
+
+  content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId, measuredAt])
+  @@map("content_metric_snapshots")
+}
+
+model Baseline {
+  id                   String    @id @default(uuid())
+  tenantId             String
+  candidateId          String
+  periodDays           Int       @default(90)
+  medianViews          Float?
+  medianEngagementRate Float?
+  aboveBaselineCount   Int       @default(0)
+  nearBaselineCount    Int       @default(0)
+  belowBaselineCount   Int       @default(0)
+  winningFormulaJson   String    @default("[]")
+  calculatedAt         DateTime  @default(now())
+
+  tenant               Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId, periodDays])
+  @@map("baselines")
+}
+
+model DESAssessment {
+  id                 String               @id @default(uuid())
+  tenantId           String
+  candidateId        String
+  periodDays         Int                  @default(90)
+  overallScore       Float
+  methodologyVersion String               @default("DES-2026-V1.0")
+  dataCoverage       DataCoverageStatus   @default(PARTIAL)
+  evaluatedAt        DateTime             @default(now())
+
+  tenant             Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidate          Candidate            @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  dimensions         DESDimensionScore[]
+  evidences          AIEvidence[]
+
+  @@index([candidateId, evaluatedAt])
+  @@map("des_assessments")
+}
+
+model DESDimensionScore {
+  id                 String        @id @default(uuid())
+  assessmentId       String
+  dimensionCode      String
+  dimensionName      String
+  journeyStep        String
+  journeyTitle       String
+  score              Float
+  confidence         Float         @default(0.85)
+  status             String        @default("SUFFICIENT")
+  indicatorsJson     String        @default("{}")
+  findingsSummary    String
+  reflectiveQuestion String
+  evidenceCount      Int           @default(0)
+
+  assessment         DESAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  evidences          AIEvidence[]
+
+  @@index([assessmentId, dimensionCode])
+  @@map("des_dimension_scores")
+}
+
+model AIEvidence {
+  id               String              @id @default(uuid())
+  assessmentId     String
+  dimensionScoreId String?
+  contentId        String?
+  platform         SocialPlatform
+  sourceUrl        String
+  publishedAt      DateTime
+  evidenceText     String
+  excerptSnippet   String
+  findingType      String
+  reviewStatus     FindingReviewStatus @default(PENDING_REVIEW)
+  reviewerNote     String?
+  reviewedAt       DateTime?
+  createdAt        DateTime            @default(now())
+
+  assessment       DESAssessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  dimensionScore   DESDimensionScore?  @relation(fields: [dimensionScoreId], references: [id], onDelete: SetNull)
+  content          Content?            @relation(fields: [contentId], references: [id], onDelete: SetNull)
+
+  @@index([assessmentId])
+  @@map("ai_evidences")
+}
+
+model RoadmapItem {
+  id                String          @id @default(uuid())
+  tenantId          String
+  candidateId       String
+  dimensionCode     String
+  dimensionName     String
+  currentScore      Float
+  targetScore       Float
+  quadrant          RoadmapQuadrant
+  month             String
+  actionTitle       String
+  actionDescription String
+  pic               String
+  timelineDays      Int
+  kpiIndicator      String
+  isCompleted       Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  candidate         Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId, quadrant])
+  @@map("roadmap_items")
+}
+
+model CohortBenchmark {
+  id                      String        @id @default(uuid())
+  tenantId                String
+  cohortCode              String
+  electionLevel           ElectionLevel
+  dapil                   String
+  totalCandidates         Int           @default(0)
+  medianDESScore          Float         @default(0)
+  q1Score                 Float         @default(0)
+  q3Score                 Float         @default(0)
+  topPerformingDimension String        @default("D01")
+  dataCoverageRate        Float         @default(100.0)
+  calculatedAt            DateTime      @default(now())
+
+  tenant                  Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, electionLevel, dapil])
+  @@map("cohort_benchmarks")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  tenantId    String
+  userId      String?
+  action      String
+  entity      String
+  entityId    String
+  detailsJson String   @default("{}")
+  createdAt   DateTime @default(now())
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@map("audit_logs")
+}
