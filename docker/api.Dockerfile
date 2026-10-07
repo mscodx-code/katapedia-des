@@ -17,15 +17,11 @@ WORKDIR /app
 COPY --from=builder /app ./
 CMD ["pnpm", "--filter", "@katapedia/database", "run", "deploy"]
 
-FROM node:24-alpine AS runner
+FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/packages/ ./packages/
-COPY --from=builder /app/apps/api/ ./apps/api/
-COPY --from=builder /app/node_modules/ ./node_modules/
+COPY --from=builder /app ./
 
 EXPOSE 4000
-CMD ["node", "apps/api/dist/server.js"]
+CMD ["pnpm", "--filter", "@katapedia/api", "start"]
