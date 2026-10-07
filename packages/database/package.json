@@ -12,7 +12,7 @@
     "build": "tsc --noEmit",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
-    "deploy": "prisma migrate deploy",
+    "deploy": "prisma db push",
     "seed": "tsx src/seed.ts"
   },
   "dependencies": {

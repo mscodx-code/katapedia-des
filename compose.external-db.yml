@@ -19,13 +19,13 @@ services:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      SESSION_SECRET: ${SESSION_SECRET}
+      REDIS_URL: ${REDIS_URL:-redis://localhost:6379}
+      SESSION_SECRET: ${SESSION_SECRET:-katapedia-super-secret-session-key-development-minimum-32-chars-long}
       STORAGE_PATH: /app/storage
       AI_PROVIDER: ${AI_PROVIDER:-ollama}
-      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
-      OLLAMA_MODEL: ${OLLAMA_MODEL}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://localhost:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:8b}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     ports:
       - "4000:4000"
     volumes:

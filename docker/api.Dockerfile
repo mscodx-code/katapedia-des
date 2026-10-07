@@ -15,7 +15,7 @@ RUN pnpm --filter @katapedia/api build
 FROM base AS migrate
 WORKDIR /app
 COPY --from=builder /app ./
-CMD ["pnpm", "--filter", "@katapedia/database", "deploy"]
+CMD ["pnpm", "--filter", "@katapedia/database", "run", "deploy"]
 
 FROM node:24-alpine AS runner
 WORKDIR /app
