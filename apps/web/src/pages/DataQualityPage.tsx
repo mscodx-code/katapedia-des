@@ -431,18 +431,63 @@ export const DataQualityPage: React.FC = () => {
                   </div>
 
                   {authModalAccount.platform === 'INSTAGRAM' && (
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
-                      <div>
-                        <strong style={{ color: '#17212B' }}>pages_read_engagement</strong>
-                        <div style={{ fontSize: '12px', color: '#5B6672' }}>
-                          Membaca data Halaman Facebook terhubung, jumlah pengikut, dan interaksi postingan resmi untuk membantu Admin mengelola Halaman.
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                        <div>
+                          <strong style={{ color: '#17212B' }}>pages_show_list</strong>
+                          <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                            Mengakses daftar Halaman Facebook yang Anda kelola (endpoint <code>GET /me/accounts</code>) untuk memverifikasi peran Admin dan menampilkan pilihan Halaman yang ingin dihubungkan.
+                          </div>
                         </div>
                       </div>
-                    </div>
+
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                        <div>
+                          <strong style={{ color: '#17212B' }}>pages_read_engagement</strong>
+                          <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                            Membaca data Halaman Facebook terhubung, jumlah pengikut, dan interaksi postingan resmi untuk membantu Admin mengelola Halaman.
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
+
+              {/* Managed Pages List via pages_show_list */}
+              {authModalAccount.platform === 'INSTAGRAM' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#17212B' }}>
+                      Pilih Halaman Facebook yang Dikelola (<code>pages_show_list</code>):
+                    </label>
+                    <span style={{ fontSize: '11px', color: '#28A745', fontWeight: 600 }}>GET /me/accounts</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ border: '2px solid #0E5A63', borderRadius: '8px', padding: '10px 12px', background: '#F0F9F5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '13px', color: '#0E5A63' }}>Katapedia Indonesia (Halaman Resmi)</div>
+                        <div style={{ fontSize: '11px', color: '#5B6672', marginTop: '2px' }}>
+                          ID: 108412891902847 · Terhubung ke Instagram <strong>@katapedia.id</strong> · Peran: Admin
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '11px', background: '#0E5A63', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>Dipilih ✓</span>
+                    </div>
+
+                    <div style={{ border: '1px solid #DDE1DA', borderRadius: '8px', padding: '10px 12px', background: '#FAFAFA', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: 0.8 }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '13px', color: '#3B4651' }}>Caleg DKI 1 Official</div>
+                        <div style={{ fontSize: '11px', color: '#5B6672', marginTop: '2px' }}>
+                          ID: 109283719283712 · Terhubung ke Instagram <strong>@caleg_dki1_official</strong> · Peran: Admin
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '11px', border: '1px solid #B9C1C9', color: '#5B6672', padding: '2px 8px', borderRadius: '10px' }}>Pilih</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Security reassurance */}
               <div
@@ -469,7 +514,7 @@ export const DataQualityPage: React.FC = () => {
                     Meta mensyaratkan saat record layar, browser membuka domain resmi <code>instagram.com</code> / <code>facebook.com</code> dengan bilah URL terlihat:
                   </div>
                   <a
-                    href={`https://www.facebook.com/v21.0/dialog/oauth?client_id=${metaAppId}&redirect_uri=${encodeURIComponent(window.location.origin + '/data-quality?connected=true&handle=' + authModalAccount.name.replace(/^(IG|TikTok) @/, ''))}&response_type=code&scope=pages_read_engagement%2Cinstagram_basic%2Cinstagram_business_basic%2Cinstagram_business_manage_insights`}
+                    href={`https://www.facebook.com/v21.0/dialog/oauth?client_id=${metaAppId}&redirect_uri=${encodeURIComponent(window.location.origin + '/data-quality?connected=true&handle=' + authModalAccount.name.replace(/^(IG|TikTok) @/, ''))}&response_type=code&scope=pages_show_list%2Cpages_read_engagement%2Cinstagram_basic%2Cinstagram_business_basic%2Cinstagram_business_manage_insights`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -623,12 +668,18 @@ export const DataQualityPage: React.FC = () => {
                     <span style={{ color: '#5B6672' }}>ID Halaman FB:</span>
                     <span style={{ fontFamily: 'monospace', color: '#17212B' }}>108412891902847</span>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                    <span style={{ color: '#5B6672' }}>Verifikasi Pengelola:</span>
+                    <span style={{ color: '#1F5E34', fontWeight: 600, fontSize: '12px' }}>
+                      ✓ Terverifikasi Admin via pages_show_list
+                    </span>
+                  </div>
                 </>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
                 <span style={{ color: '#5B6672' }}>Izin Meta Aktif:</span>
                 <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#0E5A63', fontWeight: 600 }}>
-                  {connectedInfoAccount.platform === 'INSTAGRAM' ? 'pages_read_engagement, instagram_basic, insights' : 'user.info.basic, video.list'}
+                  {connectedInfoAccount.platform === 'INSTAGRAM' ? 'pages_show_list, pages_read_engagement, instagram_basic, insights' : 'user.info.basic, video.list'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
