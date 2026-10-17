@@ -326,58 +326,94 @@ export const DataQualityPage: React.FC = () => {
               background: '#fff',
               borderRadius: '16px',
               width: '100%',
-              maxWidth: '480px',
+              maxWidth: '500px',
+              maxHeight: '88vh',
+              display: 'flex',
+              flexDirection: 'column',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
               overflow: 'hidden',
               fontFamily: "'IBM Plex Sans', system-ui, sans-serif"
             }}
           >
-            {/* Branded Header */}
+            {/* Branded Header - Compact & Pinned */}
             <div
               style={{
+                flexShrink: 0,
                 background: authModalAccount.platform === 'INSTAGRAM'
                   ? 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)'
                   : '#111827',
                 color: '#fff',
-                padding: '24px 28px',
-                textAlign: 'center'
+                padding: '16px 20px',
+                textAlign: 'center',
+                position: 'relative'
               }}
             >
-              <div style={{ display: 'inline-flex', padding: '10px', background: 'rgba(255,255,255,0.2)', borderRadius: '14px', marginBottom: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setAuthModalAccount(null)}
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: 'rgba(0,0,0,0.25)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  color: '#fff',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+              <div style={{ display: 'inline-flex', padding: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '10px', marginBottom: '4px' }}>
                 {authModalAccount.platform === 'INSTAGRAM' ? (
-                  <InstagramIcon size={34} white />
+                  <InstagramIcon size={24} white />
                 ) : (
-                  <TikTokIcon size={34} white />
+                  <TikTokIcon size={24} white />
                 )}
               </div>
-              <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: 700 }}>
+              <h3 style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: 700 }}>
                 {authModalAccount.platform === 'INSTAGRAM'
                   ? 'Masuk dengan Akun Instagram'
                   : 'Masuk dengan Akun TikTok'}
               </h3>
-              <p style={{ margin: 0, fontSize: '13px', opacity: 0.9 }}>
+              <p style={{ margin: 0, fontSize: '12px', opacity: 0.9 }}>
                 Otorisasi akses resmi untuk Digital Electability Dashboard (DED)
               </p>
             </div>
 
-            {/* Modal Body */}
-            <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            {/* Modal Body - Scrollable Middle Area */}
+            <div
+              style={{
+                flex: '1 1 auto',
+                overflowY: 'auto',
+                padding: '16px 22px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}
+            >
               {/* Account target info */}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '14px',
-                  padding: '12px 16px',
+                  gap: '12px',
+                  padding: '10px 14px',
                   background: '#F8FAF9',
                   border: '1px solid #E3E7E1',
-                  borderRadius: '10px'
+                  borderRadius: '8px'
                 }}
               >
                 <div
                   style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '36px',
+                    height: '36px',
                     borderRadius: '50%',
                     background: '#0E5A63',
                     color: '#fff',
@@ -385,46 +421,62 @@ export const DataQualityPage: React.FC = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 700,
-                    fontSize: '16px'
+                    fontSize: '14px',
+                    flexShrink: 0
                   }}
                 >
                   {authModalAccount.name.charAt(authModalAccount.name.indexOf('@') + 1 || 0).toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: '15px', color: '#17212B' }}>
+                  <div style={{ fontWeight: 700, fontSize: '14px', color: '#17212B' }}>
                     {authModalAccount.name}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                  <div style={{ fontSize: '11px', color: '#5B6672' }}>
                     Kandidat: {authModalAccount.candidate} · Akun Profesional
                   </div>
                 </div>
               </div>
 
-              {/* Permissions explanation */}
+              {/* Permissions explanation - With Inline Scrolling Container */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#5B6672', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '8px' }}>
-                  Izin Akses API yang Diminta ({authModalAccount.platform === 'INSTAGRAM' ? 'Meta' : 'TikTok'}):
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#5B6672', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                    Izin Akses API yang Diminta ({authModalAccount.platform === 'INSTAGRAM' ? 'Meta' : 'TikTok'}):
+                  </div>
+                  <span style={{ fontSize: '10px', color: '#8794A2', fontWeight: 500 }}>Scroll untuk melihat semua ↓</span>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                <div
+                  style={{
+                    maxHeight: '130px',
+                    overflowY: 'auto',
+                    border: '1px solid #DDE1DA',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    background: '#FAFAF8',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <span style={{ color: '#097E52', fontWeight: 700, fontSize: '13px' }}>✓</span>
                     <div>
-                      <strong style={{ color: '#17212B' }}>
+                      <strong style={{ color: '#17212B', fontSize: '12px' }}>
                         {authModalAccount.platform === 'INSTAGRAM' ? 'instagram_business_basic' : 'user.info.basic'}
                       </strong>
-                      <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                      <div style={{ fontSize: '11px', color: '#5B6672', lineHeight: 1.35 }}>
                         Membaca informasi profil, username, foto profil, dan postingan media.
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                    <span style={{ color: '#097E52', fontWeight: 700, fontSize: '13px' }}>✓</span>
                     <div>
-                      <strong style={{ color: '#17212B' }}>
+                      <strong style={{ color: '#17212B', fontSize: '12px' }}>
                         {authModalAccount.platform === 'INSTAGRAM' ? 'instagram_business_manage_insights' : 'video.list'}
                       </strong>
-                      <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                      <div style={{ fontSize: '11px', color: '#5B6672', lineHeight: 1.35 }}>
                         Mengakses metrik tayangan, interaksi (likes, komentar, shares, saves), dan jangkauan audiens.
                       </div>
                     </div>
@@ -432,22 +484,22 @@ export const DataQualityPage: React.FC = () => {
 
                   {authModalAccount.platform === 'INSTAGRAM' && (
                     <>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                        <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <span style={{ color: '#097E52', fontWeight: 700, fontSize: '13px' }}>✓</span>
                         <div>
-                          <strong style={{ color: '#17212B' }}>pages_show_list</strong>
-                          <div style={{ fontSize: '12px', color: '#5B6672' }}>
-                            Mengakses daftar Halaman Facebook yang Anda kelola (endpoint <code>GET /me/accounts</code>) untuk memverifikasi peran Admin dan menampilkan pilihan Halaman yang ingin dihubungkan.
+                          <strong style={{ color: '#17212B', fontSize: '12px' }}>pages_show_list</strong>
+                          <div style={{ fontSize: '11px', color: '#5B6672', lineHeight: 1.35 }}>
+                            Mengakses daftar Halaman Facebook yang Anda kelola (endpoint <code>GET /me/accounts</code>) untuk memverifikasi peran Admin.
                           </div>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                        <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <span style={{ color: '#097E52', fontWeight: 700, fontSize: '13px' }}>✓</span>
                         <div>
-                          <strong style={{ color: '#17212B' }}>pages_read_engagement</strong>
-                          <div style={{ fontSize: '12px', color: '#5B6672' }}>
-                            Membaca data Halaman Facebook terhubung, jumlah pengikut, dan interaksi postingan resmi untuk membantu Admin mengelola Halaman.
+                          <strong style={{ color: '#17212B', fontSize: '12px' }}>pages_read_engagement</strong>
+                          <div style={{ fontSize: '11px', color: '#5B6672', lineHeight: 1.35 }}>
+                            Membaca data Halaman Facebook terhubung, jumlah pengikut, dan interaksi postingan resmi.
                           </div>
                         </div>
                       </div>
@@ -456,34 +508,24 @@ export const DataQualityPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Managed Pages List via pages_show_list */}
+              {/* Managed Pages List via pages_show_list - Compact */}
               {authModalAccount.platform === 'INSTAGRAM' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#17212B' }}>
-                      Pilih Halaman Facebook yang Dikelola (<code>pages_show_list</code>):
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 700, color: '#5B6672', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                      Pilih Halaman Facebook Dikelola (pages_show_list):
                     </label>
-                    <span style={{ fontSize: '11px', color: '#28A745', fontWeight: 600 }}>GET /me/accounts</span>
+                    <span style={{ fontSize: '10px', color: '#28A745', fontWeight: 600 }}>GET /me/accounts</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ border: '2px solid #0E5A63', borderRadius: '8px', padding: '10px 12px', background: '#F0F9F5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ border: '2px solid #0E5A63', borderRadius: '8px', padding: '8px 10px', background: '#F0F9F5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '13px', color: '#0E5A63' }}>Katapedia Indonesia (Halaman Resmi)</div>
-                        <div style={{ fontSize: '11px', color: '#5B6672', marginTop: '2px' }}>
-                          ID: 108412891902847 · Terhubung ke Instagram <strong>@katapedia.id</strong> · Peran: Admin
+                        <div style={{ fontWeight: 600, fontSize: '12px', color: '#0E5A63' }}>Katapedia Indonesia (Halaman Resmi)</div>
+                        <div style={{ fontSize: '10px', color: '#5B6672' }}>
+                          ID: 108412891902847 · Terhubung ke <strong>@katapedia.id</strong> · Admin
                         </div>
                       </div>
-                      <span style={{ fontSize: '11px', background: '#0E5A63', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>Dipilih ✓</span>
-                    </div>
-
-                    <div style={{ border: '1px solid #DDE1DA', borderRadius: '8px', padding: '10px 12px', background: '#FAFAFA', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: 0.8 }}>
-                      <div>
-                        <div style={{ fontWeight: 600, fontSize: '13px', color: '#3B4651' }}>Caleg DKI 1 Official</div>
-                        <div style={{ fontSize: '11px', color: '#5B6672', marginTop: '2px' }}>
-                          ID: 109283719283712 · Terhubung ke Instagram <strong>@caleg_dki1_official</strong> · Peran: Admin
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '11px', border: '1px solid #B9C1C9', color: '#5B6672', padding: '2px 8px', borderRadius: '10px' }}>Pilih</span>
+                      <span style={{ fontSize: '10px', background: '#0E5A63', color: '#fff', padding: '2px 6px', borderRadius: '8px', fontWeight: 600 }}>Dipilih ✓</span>
                     </div>
                   </div>
                 </div>
@@ -492,13 +534,13 @@ export const DataQualityPage: React.FC = () => {
               {/* Security reassurance */}
               <div
                 style={{
-                  padding: '10px 14px',
-                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
                   background: '#F0F9F5',
                   border: '1px solid #C6EAD8',
                   color: '#135436',
-                  fontSize: '12px',
-                  lineHeight: '1.5'
+                  fontSize: '11px',
+                  lineHeight: '1.4'
                 }}
               >
                 🔒 <strong>Aman &amp; Terenkripsi:</strong> DED tidak pernah meminta kata sandi akun Anda. Otorisasi berjalan aman sesuai protokol OAuth resmi.
@@ -506,12 +548,9 @@ export const DataQualityPage: React.FC = () => {
 
               {/* Official Meta URL block (for recording address bar requirement) */}
               {authModalAccount.platform === 'INSTAGRAM' && (
-                <div style={{ padding: '12px', borderRadius: '8px', background: '#F8FAF9', border: '1px solid #E3E7E1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#17212B' }}>
-                    🌐 Alur Otorisasi Resmi Meta (Bilah Alamat Browser):
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#5B6672' }}>
-                    Meta mensyaratkan saat record layar, browser membuka domain resmi <code>instagram.com</code> / <code>facebook.com</code> dengan bilah URL terlihat:
+                <div style={{ padding: '10px 12px', borderRadius: '6px', background: '#F8FAF9', border: '1px solid #E3E7E1', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 600, color: '#17212B' }}>
+                    🌐 Bilah Alamat Browser Meta OAuth:
                   </div>
                   <a
                     href={`https://www.facebook.com/v21.0/dialog/oauth?client_id=${metaAppId}&redirect_uri=${encodeURIComponent(window.location.origin + '/data-quality?connected=true&handle=' + authModalAccount.name.replace(/^(IG|TikTok) @/, ''))}&response_type=code&scope=pages_show_list%2Cpages_read_engagement%2Cinstagram_basic%2Cinstagram_business_basic%2Cinstagram_business_manage_insights`}
@@ -521,12 +560,12 @@ export const DataQualityPage: React.FC = () => {
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '8px',
-                      padding: '8px 12px',
+                      gap: '6px',
+                      padding: '7px 10px',
                       borderRadius: '6px',
                       background: '#1877F2',
                       color: '#fff',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       fontWeight: 600,
                       textDecoration: 'none'
                     }}
@@ -535,60 +574,69 @@ export const DataQualityPage: React.FC = () => {
                   </a>
                 </div>
               )}
+            </div>
 
-              {/* Action buttons */}
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button
-                  type="button"
-                  onClick={() => setAuthModalAccount(null)}
-                  disabled={isAuthorizing}
-                  style={{
-                    flex: '1',
-                    height: '42px',
-                    borderRadius: '8px',
-                    border: '1px solid #DDE1DA',
-                    background: '#fff',
-                    color: '#3B4651',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Batal
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmAuth}
-                  disabled={isAuthorizing}
-                  style={{
-                    flex: '2',
-                    height: '42px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    background: authModalAccount.platform === 'INSTAGRAM'
-                      ? 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'
-                      : '#000',
-                    color: '#fff',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    cursor: isAuthorizing ? 'wait' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-                  }}
-                >
-                  {isAuthorizing ? (
-                    <span>Menghubungkan ke API...</span>
-                  ) : (
-                    <>
-                      {authModalAccount.platform === 'INSTAGRAM' ? <InstagramIcon size={16} white /> : <TikTokIcon size={16} white />}
-                      <span>Otorisasi &amp; Mulai Sync</span>
-                    </>
-                  )}
-                </button>
-              </div>
+            {/* Modal Footer - Pinned at bottom, always visible! */}
+            <div
+              style={{
+                flexShrink: 0,
+                padding: '12px 20px',
+                borderTop: '1px solid #EEF0EC',
+                background: '#fff',
+                display: 'flex',
+                gap: '10px'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setAuthModalAccount(null)}
+                disabled={isAuthorizing}
+                style={{
+                  flex: '1',
+                  height: '40px',
+                  borderRadius: '8px',
+                  border: '1px solid #DDE1DA',
+                  background: '#fff',
+                  color: '#3B4651',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmAuth}
+                disabled={isAuthorizing}
+                style={{
+                  flex: '2',
+                  height: '40px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: authModalAccount.platform === 'INSTAGRAM'
+                    ? 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'
+                    : '#000',
+                  color: '#fff',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: isAuthorizing ? 'wait' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                }}
+              >
+                {isAuthorizing ? (
+                  <span>Menghubungkan ke API...</span>
+                ) : (
+                  <>
+                    {authModalAccount.platform === 'INSTAGRAM' ? <InstagramIcon size={15} white /> : <TikTokIcon size={15} white />}
+                    <span>Otorisasi &amp; Mulai Sync</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
