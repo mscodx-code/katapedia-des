@@ -15,6 +15,7 @@ import { aiRoutes } from './modules/ai/ai.routes.js';
 import { usersRoutes } from './modules/users/users.routes.js';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 import { instagramWebhookRoutes } from './modules/integrations/instagram/instagram-webhook.routes.js';
+import { prisma, seedDatabase } from '@katapedia/database';
 
 dotenv.config();
 
@@ -82,6 +83,18 @@ async function main() {
   await app.register(usersRoutes, { prefix: '/api/v1' });
   await app.register(instagramWebhookRoutes, { prefix: '/api/integrations/instagram' });
   await app.register(instagramWebhookRoutes, { prefix: '/api/v1/integrations/instagram' });
+
+  // Auto-seed if database is brand new and has 0 users
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount === 0) {
+      console.log('🌱 Database is empty. Running automatic initial seed...');
+      await seedDatabase(prisma);
+      console.log('✅ Automatic initial database seed completed!');
+    }
+  } catch (seedErr) {
+    console.warn('⚠️ Auto-seed check warning (will proceed normally):', seedErr);
+  }
 
   const port = Number(process.env.PORT) || 4000;
   await app.listen({ port, host: '0.0.0.0' });

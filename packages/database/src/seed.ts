@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-async function main() {
+export async function seedDatabase(db: PrismaClient = prisma) {
   console.log('🌱 Starting Katapedia DES Database Seed...');
 
   // 1. Clean existing records
@@ -510,11 +510,13 @@ async function main() {
   console.log('✅ Database seed completed successfully!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Error during seed:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (process.argv[1]?.includes('seed.ts') || process.argv[1]?.includes('seed.js')) {
+  seedDatabase()
+    .catch((e) => {
+      console.error('❌ Error during seed:', e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
