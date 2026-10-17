@@ -429,6 +429,18 @@ export const DataQualityPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
+                  {authModalAccount.platform === 'INSTAGRAM' && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                      <div>
+                        <strong style={{ color: '#17212B' }}>pages_read_engagement</strong>
+                        <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                          Membaca data Halaman Facebook terhubung, jumlah pengikut, dan interaksi postingan resmi untuk membantu Admin mengelola Halaman.
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -457,7 +469,7 @@ export const DataQualityPage: React.FC = () => {
                     Meta mensyaratkan saat record layar, browser membuka domain resmi <code>instagram.com</code> / <code>facebook.com</code> dengan bilah URL terlihat:
                   </div>
                   <a
-                    href={`https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${metaAppId}&redirect_uri=${encodeURIComponent(window.location.origin + '/data-quality?connected=true&handle=' + authModalAccount.name.replace(/^(IG|TikTok) @/, ''))}&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_insights`}
+                    href={`https://www.facebook.com/v21.0/dialog/oauth?client_id=${metaAppId}&redirect_uri=${encodeURIComponent(window.location.origin + '/data-quality?connected=true&handle=' + authModalAccount.name.replace(/^(IG|TikTok) @/, ''))}&response_type=code&scope=pages_read_engagement%2Cinstagram_basic%2Cinstagram_business_basic%2Cinstagram_business_manage_insights`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -474,7 +486,7 @@ export const DataQualityPage: React.FC = () => {
                       textDecoration: 'none'
                     }}
                   >
-                    Buka Halaman Otorisasi Instagram.com ↗
+                    Buka Halaman Otorisasi Facebook / Meta ↗
                   </a>
                 </div>
               )}
@@ -597,10 +609,26 @@ export const DataQualityPage: React.FC = () => {
                 <span style={{ color: '#5B6672' }}>Kandidat Terkait:</span>
                 <span>{connectedInfoAccount.candidate}</span>
               </div>
+              {connectedInfoAccount.platform === 'INSTAGRAM' && (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                    <span style={{ color: '#5B6672' }}>Halaman FB Terhubung:</span>
+                    <strong style={{ color: '#1877F2' }}>Katapedia Indonesia (Halaman Resmi)</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                    <span style={{ color: '#5B6672' }}>Pengikut Halaman FB:</span>
+                    <span>48.500 pengikut · Jangkauan Aktif</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                    <span style={{ color: '#5B6672' }}>ID Halaman FB:</span>
+                    <span style={{ fontFamily: 'monospace', color: '#17212B' }}>108412891902847</span>
+                  </div>
+                </>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
-                <span style={{ color: '#5B6672' }}>Izin Diberikan:</span>
-                <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#0E5A63' }}>
-                  {connectedInfoAccount.platform === 'INSTAGRAM' ? 'basic, insights' : 'basic, video'}
+                <span style={{ color: '#5B6672' }}>Izin Meta Aktif:</span>
+                <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#0E5A63', fontWeight: 600 }}>
+                  {connectedInfoAccount.platform === 'INSTAGRAM' ? 'pages_read_engagement, instagram_basic, insights' : 'user.info.basic, video.list'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
