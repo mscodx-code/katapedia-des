@@ -90,27 +90,10 @@ export const App: React.FC = () => {
               <Route
                 path="/privacy-policy"
                 element={
-                  <div style={{ padding: '24px', textAlign: 'center', background: '#fff', minHeight: '100vh' }}>
-                    <p>Membuka Kebijakan Privasi...</p>
-                    <a href="/privacy-policy.html" style={{ color: '#2155d6' }}>
-                      Klik di sini jika tidak terbuka otomatis
-                    </a>
-                    {(() => {
-                      if (typeof window !== 'undefined') {
-                        window.location.replace('/privacy-policy.html');
-                      }
-                      return null;
-                    })()}
-                  </div>
-                }
-              />
-              <Route
-                path="/privacy-policy.html"
-                element={
-                  <div style={{ padding: '24px', textAlign: 'center', background: '#fff', minHeight: '100vh' }}>
-                    <p>Membuka Kebijakan Privasi...</p>
-                    <a href="/privacy-policy.html" style={{ color: '#2155d6' }}>
-                      Klik di sini jika tidak terbuka otomatis
+                  <div style={{ padding: '32px', textAlign: 'center', background: '#fff', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+                    <p style={{ fontSize: '16px', color: '#333' }}>Membuka Kebijakan Privasi...</p>
+                    <a href="/privacy-policy.html" style={{ color: '#2155d6', textDecoration: 'underline' }}>
+                      Klik di sini untuk membaca Kebijakan Privasi DED
                     </a>
                   </div>
                 }
