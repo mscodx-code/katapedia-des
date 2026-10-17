@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { AuthProvider, useAuth } from './lib/auth';
+
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CandidatesPage } from './pages/CandidatesPage';
-import { CandidateProfilePage } from './pages/CandidateProfilePage';
-import { RoadmapPage } from './pages/RoadmapPage';
+import { CandidateDetailPage } from './pages/CandidateDetailPage';
+import { AccountDetailPage } from './pages/AccountDetailPage';
 import { ContentExplorerPage } from './pages/ContentExplorerPage';
-import { CohortsPage } from './pages/CohortsPage';
-import { AIWorkspacePage } from './pages/AIWorkspacePage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
-import { ReportsPage } from './pages/ReportsPage';
-import { TeamManagementPage } from './pages/TeamManagementPage';
-import { SettingsPage } from './pages/SettingsPage';
+import { ContentDetailPage } from './pages/ContentDetailPage';
+import { AIFindingsPage } from './pages/AIFindingsPage';
+import { EvidenceViewerPage } from './pages/EvidenceViewerPage';
+import { CohortContextPage } from './pages/CohortContextPage';
+import { CohortComparisonPage } from './pages/CohortComparisonPage';
+import { HistoricalTrendPage } from './pages/HistoricalTrendPage';
+import { DataQualityPage } from './pages/DataQualityPage';
+import { AdminMasterDataPage } from './pages/AdminMasterDataPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,13 +41,19 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
-      <Navbar currentTenant="pemilu-2029" />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 overflow-x-hidden min-h-[calc(100vh-4rem)] bg-slate-50">
-          {children}
-        </main>
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif",
+        color: '#17212B',
+        background: '#F4F5F2',
+        boxSizing: 'border-box',
+      }}
+    >
+      <Sidebar />
+      <div style={{ flex: '999 1 560px', minWidth: 0, overflowX: 'auto' }}>
+        {children}
       </div>
     </div>
   );
@@ -62,16 +70,19 @@ export const App: React.FC = () => {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/candidates" element={<CandidatesPage />} />
-              <Route path="/candidates/:id" element={<CandidateProfilePage />} />
-              <Route path="/candidates/:id/roadmap" element={<RoadmapPage />} />
-              <Route path="/candidates/:id/contents" element={<ContentExplorerPage />} />
+              <Route path="/candidates/:id" element={<CandidateDetailPage />} />
+              <Route path="/accounts/:id" element={<AccountDetailPage />} />
               <Route path="/contents" element={<ContentExplorerPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="/cohorts" element={<CohortsPage />} />
-              <Route path="/ai-workspace" element={<AIWorkspacePage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/team" element={<TeamManagementPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/contents/:id" element={<ContentDetailPage />} />
+              <Route path="/ai-findings" element={<AIFindingsPage />} />
+              <Route path="/evidence" element={<EvidenceViewerPage />} />
+              <Route path="/evidence/:id" element={<EvidenceViewerPage />} />
+              <Route path="/cohorts" element={<CohortContextPage />} />
+              <Route path="/cohort-comparison" element={<CohortComparisonPage />} />
+              <Route path="/cohorts/comparison" element={<CohortComparisonPage />} />
+              <Route path="/historical-trend" element={<HistoricalTrendPage />} />
+              <Route path="/data-quality" element={<DataQualityPage />} />
+              <Route path="/admin" element={<AdminMasterDataPage />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </AppLayout>

@@ -12,7 +12,9 @@ import { scoringRoutes } from './modules/scoring/scoring.routes.js';
 import { roadmapRoutes } from './modules/roadmap/roadmap.routes.js';
 import { cohortRoutes } from './modules/cohorts/cohorts.routes.js';
 import { aiRoutes } from './modules/ai/ai.routes.js';
+import { usersRoutes } from './modules/users/users.routes.js';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
+import { instagramWebhookRoutes } from './modules/integrations/instagram/instagram-webhook.routes.js';
 
 dotenv.config();
 
@@ -77,6 +79,9 @@ async function main() {
   await app.register(cohortRoutes, { prefix: '/api/v1' });
   await app.register(aiRoutes, { prefix: '/api/v1' });
   await app.register(dashboardRoutes, { prefix: '/api/v1' });
+  await app.register(usersRoutes, { prefix: '/api/v1' });
+  await app.register(instagramWebhookRoutes, { prefix: '/api/integrations/instagram' });
+  await app.register(instagramWebhookRoutes, { prefix: '/api/v1/integrations/instagram' });
 
   const port = Number(process.env.PORT) || 4000;
   await app.listen({ port, host: '0.0.0.0' });

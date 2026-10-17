@@ -1,319 +1,426 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Instagram, 
-  Video, 
-  Sparkles, 
-  Eye, 
-  Heart, 
-  MessageCircle, 
-  Share2, 
-  Bookmark, 
-  ExternalLink,
-  Filter,
-  TrendingUp,
-  Award,
-  Layers,
-  ChevronRight
-} from 'lucide-react';
-import { api } from '../lib/api';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
+interface ContentItem {
+  id: string;
+  title: string;
+  format: string;
+  candidate: string;
+  candidateId: string;
+  platform: 'Instagram' | 'TikTok';
+  date: string;
+  views: string;
+  likes: string;
+  comments: string;
+  shares: string;
+  saves: string;
+  baseline: 'Above' | 'Below' | 'Near';
+  topic: string;
+  aiStatus: 'Selesai' | 'Dalam antrean' | 'Belum ada transkrip';
+}
+
+const initialContents: ContentItem[] = [
+  {
+    id: 'CNT-0001',
+    title: 'Kunjungan ke pasar tradisional',
+    format: 'Video · 0:42',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'Instagram',
+    date: '2 Okt',
+    views: '11.800',
+    likes: '940',
+    comments: '128',
+    shares: '76',
+    saves: 'N/A',
+    baseline: 'Above',
+    topic: 'Ekonomi warga',
+    aiStatus: 'Selesai'
+  },
+  {
+    id: 'CNT-0002',
+    title: 'Ucapan hari besar',
+    format: 'Foto',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'Instagram',
+    date: '28 Sep',
+    views: '620',
+    likes: '74',
+    comments: '5',
+    shares: '2',
+    saves: 'N/A',
+    baseline: 'Below',
+    topic: 'Ucapan / seremonial',
+    aiStatus: 'Selesai'
+  },
+  {
+    id: 'CNT-0003',
+    title: 'Dialog warga soal layanan kesehatan',
+    format: 'Video · 1:05',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'TikTok',
+    date: '21 Sep',
+    views: '9.400',
+    likes: '810',
+    comments: '203',
+    shares: '95',
+    saves: '41',
+    baseline: 'Above',
+    topic: 'Layanan kesehatan',
+    aiStatus: 'Selesai'
+  },
+  {
+    id: 'CNT-0004',
+    title: 'Pengumuman agenda kegiatan',
+    format: 'Video · 0:15',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'TikTok',
+    date: '17 Sep',
+    views: '840',
+    likes: '52',
+    comments: '9',
+    shares: '3',
+    saves: '1',
+    baseline: 'Below',
+    topic: 'Agenda / informasi',
+    aiStatus: 'Selesai'
+  },
+  {
+    id: 'CNT-0005',
+    title: 'Cerita singkat perjalanan karier',
+    format: 'Carousel · 8 slide',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'Instagram',
+    date: '9 Sep',
+    views: '7.200',
+    likes: '620',
+    comments: '87',
+    shares: '44',
+    saves: 'N/A',
+    baseline: 'Above',
+    topic: 'Narasi personal',
+    aiStatus: 'Selesai'
+  },
+  {
+    id: 'CNT-0006',
+    title: 'Tanya jawab program kerja',
+    format: 'Video · 2:10',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'TikTok',
+    date: '3 Sep',
+    views: '3.050',
+    likes: '240',
+    comments: '58',
+    shares: '12',
+    saves: '9',
+    baseline: 'Near',
+    topic: 'Program kerja',
+    aiStatus: 'Belum ada transkrip'
+  },
+  {
+    id: 'CNT-0007',
+    title: 'Repost liputan media',
+    format: 'Foto',
+    candidate: 'Bakal Caleg 01',
+    candidateId: 'CAN-0001',
+    platform: 'Instagram',
+    date: '5 Sep',
+    views: '1.050',
+    likes: '88',
+    comments: '11',
+    shares: '4',
+    saves: 'N/A',
+    baseline: 'Below',
+    topic: 'Pemberitaan',
+    aiStatus: 'Dalam antrean'
+  }
+];
 
 export const ContentExplorerPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [tenantSlug] = useState('pemilu-2029');
-  const [candidates, setCandidates] = useState<any[]>([]);
-  const [activeCandidateId, setActiveCandidateId] = useState<string>(id || '');
-  const [candidate, setCandidate] = useState<any>(null);
-  const [contents, setContents] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedPlatform, setSelectedPlatform] = useState<string>('ALL');
-  const [selectedBaseline, setSelectedBaseline] = useState<string>('ALL');
+  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
+  const [platformFilter, setPlatformFilter] = useState('Semua platform');
+  const [formatFilter, setFormatFilter] = useState('Semua format');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load candidate list first
-  useEffect(() => {
-    const initCandidates = async () => {
-      try {
-        const cList = await api.getCandidates(tenantSlug);
-        setCandidates(cList);
-        if (!id && cList.length > 0) {
-          setActiveCandidateId(cList[0].id);
-        } else if (id) {
-          setActiveCandidateId(id);
-        }
-      } catch (err) {
-        console.error('Failed to load candidate list:', err);
-      }
-    };
-    initCandidates();
-  }, [id, tenantSlug]);
-
-  // Load contents whenever activeCandidateId, selectedPlatform, or selectedBaseline changes
-  useEffect(() => {
-    if (!activeCandidateId) return;
-
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const [cRes, contRes] = await Promise.all([
-          api.getCandidateDetail(tenantSlug, activeCandidateId),
-          api.getCandidateContents(tenantSlug, activeCandidateId, {
-            platform: selectedPlatform,
-            baselineCategory: selectedBaseline
-          })
-        ]);
-        setCandidate(cRes);
-        setContents(contRes);
-      } catch (err) {
-        console.error('Failed to load contents:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [activeCandidateId, selectedPlatform, selectedBaseline, tenantSlug]);
-
-  const getBaselineBadge = (category: string) => {
-    switch (category) {
-      case 'ABOVE_BASELINE':
-        return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
-            <TrendingUp className="w-3 h-3 text-emerald-600 mr-1" />
-            <span>Above Baseline (&gt;1.5x)</span>
-          </span>
-        );
-      case 'NEAR_BASELINE':
-        return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            Near Baseline
-          </span>
-        );
-      case 'BELOW_BASELINE':
-        return (
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-            Below Baseline (&lt;0.8x)
-          </span>
-        );
-      default:
-        return (
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">
-            {category}
-          </span>
-        );
-    }
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const filteredContents = initialContents.filter(item => {
+    const matchPlat = platformFilter === 'Semua platform' || platformFilter === 'Instagram & TikTok' || item.platform === platformFilter;
+    const matchFormat = formatFilter === 'Semua format' || item.format.toLowerCase().includes(formatFilter.toLowerCase().replace('video / reels', 'video'));
+    return matchPlat && matchFormat;
+  });
+
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Top back & Candidate Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {id ? (
-          <button
-            onClick={() => navigate(`/candidates/${id}`)}
-            className="flex items-center space-x-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Profil {candidate?.name || 'Caleg'}</span>
-          </button>
-        ) : (
-          <div className="text-xs font-semibold text-slate-400">
-            <span>Repository Konten Multi-Dapil</span>
-          </div>
-        )}
-
-        {/* Candidate Dropdown Selector */}
-        {candidates.length > 0 && (
-          <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm text-xs">
-            <span className="font-bold text-slate-500">Kandidat:</span>
-            <select
-              value={activeCandidateId}
-              onChange={(e) => setActiveCandidateId(e.target.value)}
-              className="bg-transparent font-bold text-blue-700 focus:outline-none cursor-pointer text-xs"
-            >
-              {candidates.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} — {c.dapil}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2 text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">
-            <span>Content Repository & Baseline Analysis</span>
-            <span>•</span>
-            <span>FRD V1.0 M04 & M05</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 font-heading">
-            Content Explorer & Formula Pemenang
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Postingan Instagram & TikTok milik{' '}
-            <strong className="text-slate-800 font-bold">{candidate?.name || 'Kandidat'}</strong> yang dianalisis oleh Personal Baseline Engine.
-          </p>
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <select
-            value={selectedPlatform}
-            onChange={(e) => setSelectedPlatform(e.target.value)}
-            className="bg-white text-xs font-semibold text-slate-700 py-2 px-3 rounded-xl border border-slate-200 focus:outline-none cursor-pointer shadow-sm"
-          >
-            <option value="ALL">Semua Platform</option>
-            <option value="INSTAGRAM">Instagram (Reels)</option>
-            <option value="TIKTOK">TikTok</option>
-          </select>
-
-          <select
-            value={selectedBaseline}
-            onChange={(e) => setSelectedBaseline(e.target.value)}
-            className="bg-white text-xs font-semibold text-slate-700 py-2 px-3 rounded-xl border border-slate-200 focus:outline-none cursor-pointer shadow-sm"
-          >
-            <option value="ALL">Semua Kinerja Konten</option>
-            <option value="ABOVE_BASELINE">Above Baseline (&gt;1.5x)</option>
-            <option value="NEAR_BASELINE">Near Baseline</option>
-            <option value="BELOW_BASELINE">Below Baseline (&lt;0.8x)</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Content List Body */}
-      {loading ? (
-        <div className="text-center py-24 text-slate-400">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-xs font-medium text-slate-600">Mengambil repository konten {candidate?.name || 'kandidat'}...</p>
-        </div>
-      ) : contents.length === 0 ? (
-        <div className="p-12 text-center rounded-2xl bg-white border border-slate-200 shadow-sm text-slate-500 space-y-2">
-          <Video className="w-10 h-10 mx-auto text-slate-400" />
-          <p className="text-base font-bold text-slate-800">Tidak ada konten ditemukan</p>
-          <p className="text-xs">Coba sesuaikan filter platform atau kategori baseline performa.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contents.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between overflow-hidden group"
-            >
-              {/* Card Top Header */}
-              <div className="p-5 pb-3 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-1.5">
-                    {item.platform === 'INSTAGRAM' ? (
-                      <div className="p-1.5 rounded-lg bg-pink-50 text-pink-600 border border-pink-100">
-                        <Instagram className="w-4 h-4" />
-                      </div>
-                    ) : (
-                      <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 border border-sky-100">
-                        <Video className="w-4 h-4" />
-                      </div>
-                    )}
-                    <span className="text-xs font-bold text-slate-700">{item.platform}</span>
-                  </div>
-
-                  {getBaselineBadge(item.baselineCategory)}
-                </div>
-
-                {/* Published Date */}
-                <div className="text-[11px] text-slate-400">
-                  Tayang: {new Date(item.publishedAt).toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </div>
-
-                {/* Winning Formula Highlight */}
-                {item.winningFormulaTag && (
-                  <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-start space-x-2">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
-                        Winning Formula Terverifikasi
-                      </span>
-                      <p className="text-xs font-semibold text-amber-900 mt-0.5">
-                        {item.winningFormulaTag}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Caption / Hook Preview */}
-                <p className="text-xs text-slate-700 leading-relaxed line-clamp-3">
-                  "{item.caption || item.hookTranscript || 'Konten video kampanye edukatif caleg.'}"
-                </p>
-              </div>
-
-              {/* Metrics & Footer */}
-              <div className="p-5 pt-3 bg-slate-50/50 border-t border-slate-100 space-y-3">
-                {/* 4 Key Engagement Metrics */}
-                <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                  <div className="p-1.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                    <div className="flex items-center justify-center text-slate-400 mb-0.5">
-                      <Eye className="w-3 h-3 mr-0.5" />
-                    </div>
-                    <span className="font-extrabold text-slate-900 block text-xs font-heading">
-                      {(item.views / 1000).toFixed(0)}k
-                    </span>
-                    <span className="text-[9px] text-slate-400">Views</span>
-                  </div>
-
-                  <div className="p-1.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                    <div className="flex items-center justify-center text-rose-500 mb-0.5">
-                      <Heart className="w-3 h-3 mr-0.5" />
-                    </div>
-                    <span className="font-extrabold text-slate-900 block text-xs font-heading">
-                      {(item.likes / 1000).toFixed(1)}k
-                    </span>
-                    <span className="text-[9px] text-slate-400">Likes</span>
-                  </div>
-
-                  <div className="p-1.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                    <div className="flex items-center justify-center text-blue-500 mb-0.5">
-                      <MessageCircle className="w-3 h-3 mr-0.5" />
-                    </div>
-                    <span className="font-extrabold text-slate-900 block text-xs font-heading">
-                      {item.comments}
-                    </span>
-                    <span className="text-[9px] text-slate-400">Komen</span>
-                  </div>
-
-                  <div className="p-1.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                    <div className="flex items-center justify-center text-emerald-500 mb-0.5">
-                      <Share2 className="w-3 h-3 mr-0.5" />
-                    </div>
-                    <span className="font-extrabold text-slate-900 block text-xs font-heading">
-                      {item.shares || 120}
-                    </span>
-                    <span className="text-[9px] text-slate-400">Share</span>
-                  </div>
-                </div>
-
-                {/* External link */}
-                {item.postUrl && (
-                  <a
-                    href={item.postUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full flex items-center justify-center space-x-1 py-1.5 text-xs text-blue-600 hover:text-blue-700 font-bold transition-colors"
-                  >
-                    <span>Buka Postingan Asli</span>
-                    <ExternalLink className="w-3 h-3 ml-0.5" />
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
+    <main style={{ flex: "999 1 560px", minWidth: 0, padding: "28px 36px 48px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: "24px" }}>
+      {toastMessage && (
+        <div style={{ position: 'fixed', top: '24px', right: '24px', background: '#0E5A63', color: '#fff', padding: '12px 20px', borderRadius: '8px', zIndex: 9999, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '14px', fontWeight: 500 }}>
+          {toastMessage}
         </div>
       )}
-    </div>
+
+      <header style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: "16px" }}>
+        <div>
+          <div style={{ fontSize: "13px", color: "#5B6672" }}>Pemantauan</div>
+          <h1 style={{ margin: "2px 0 0", fontSize: "28px", fontWeight: "600" }}>Content Explorer</h1>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
+          <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#E9ECEF", color: "#3B4651", fontSize: "12px", fontWeight: "500" }}>Data ilustrasi PoC</span>
+          <button 
+            type="button" 
+            onClick={() => showToast('Ekspor CSV konten berhasil diunduh.')}
+            style={{ height: "38px", padding: "0 16px", borderRadius: "8px", border: "1px solid #0E5A63", background: "#fff", color: "#0E5A63", fontSize: "14px", fontWeight: "600", fontFamily: "inherit", cursor: "pointer" }}
+          >
+            Export CSV
+          </button>
+        </div>
+      </header>
+
+      <section aria-label="Filter konten" style={{ display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "flex-end", background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "16px 20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 170px" }}>
+          <label htmlFor="c1" style={{ fontSize: "12px", color: "#5B6672" }}>Kandidat</label>
+          <select id="c1" style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}>
+            <option>Bakal Caleg 01</option>
+            <option>Semua kandidat</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 140px" }}>
+          <label htmlFor="c2" style={{ fontSize: "12px", color: "#5B6672" }}>Platform</label>
+          <select 
+            id="c2" 
+            value={platformFilter}
+            onChange={e => setPlatformFilter(e.target.value)}
+            style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}
+          >
+            <option>Semua platform</option>
+            <option>Instagram &amp; TikTok</option>
+            <option>Instagram</option>
+            <option>TikTok</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 140px" }}>
+          <label htmlFor="c3" style={{ fontSize: "12px", color: "#5B6672" }}>Periode</label>
+          <select id="c3" style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}>
+            <option>90 hari terakhir</option>
+            <option>30 hari terakhir</option>
+            <option>180 hari terakhir</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 140px" }}>
+          <label htmlFor="c4" style={{ fontSize: "12px", color: "#5B6672" }}>Format</label>
+          <select 
+            id="c4" 
+            value={formatFilter}
+            onChange={e => setFormatFilter(e.target.value)}
+            style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}
+          >
+            <option>Semua format</option>
+            <option>Video / Reels</option>
+            <option>Foto</option>
+            <option>Carousel</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 160px" }}>
+          <label htmlFor="c5" style={{ fontSize: "12px", color: "#5B6672" }}>Posisi vs baseline</label>
+          <select id="c5" style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}>
+            <option>Semua</option>
+            <option>Above Baseline</option>
+            <option>Near Baseline</option>
+            <option>Below Baseline</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 160px" }}>
+          <label htmlFor="c6" style={{ fontSize: "12px", color: "#5B6672" }}>Topik / isu (AI)</label>
+          <select id="c6" style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}>
+            <option>Semua topik</option>
+            <option>Layanan kesehatan</option>
+            <option>Ekonomi warga</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 160px" }}>
+          <label htmlFor="c7" style={{ fontSize: "12px", color: "#5B6672" }}>Status analisis AI</label>
+          <select id="c7" style={{ height: "38px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "14px", fontFamily: "inherit" }}>
+            <option>Semua</option>
+            <option>Sudah dianalisis</option>
+            <option>Dalam antrean</option>
+            <option>Belum ada transkrip</option>
+          </select>
+        </div>
+      </section>
+
+      <section style={{ background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "8px 20px 20px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "8px", padding: "14px 0 8px" }}>
+          <div style={{ fontSize: "14px", color: "#3B4651" }}>{filteredContents.length} konten · Bakal Caleg 01 · 90 hari terakhir</div>
+          <div role="group" aria-label="Tampilan" style={{ display: "flex", gap: "4px", background: "#E9ECEF", padding: "4px", borderRadius: "10px" }}>
+            <button 
+              type="button" 
+              onClick={() => setViewMode('table')}
+              style={{ 
+                height: "32px", 
+                padding: "0 14px", 
+                border: "0", 
+                borderRadius: "7px", 
+                background: viewMode === 'table' ? "#fff" : "transparent", 
+                color: viewMode === 'table' ? "#17212B" : "#3B4651", 
+                fontWeight: viewMode === 'table' ? "600" : "400", 
+                fontSize: "13px", 
+                fontFamily: "inherit", 
+                cursor: "pointer" 
+              }}
+            >
+              Tabel
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setViewMode('card')}
+              style={{ 
+                height: "32px", 
+                padding: "0 14px", 
+                border: "0", 
+                borderRadius: "7px", 
+                background: viewMode === 'card' ? "#fff" : "transparent", 
+                color: viewMode === 'card' ? "#17212B" : "#3B4651", 
+                fontWeight: viewMode === 'card' ? "600" : "400", 
+                fontSize: "13px", 
+                fontFamily: "inherit", 
+                cursor: "pointer" 
+              }}
+            >
+              Kartu
+            </button>
+          </div>
+        </div>
+
+        {viewMode === 'table' ? (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px", minWidth: "1040px" }}>
+              <thead>
+                <tr style={{ textAlign: "left", color: "#5B6672", fontSize: "12px", letterSpacing: ".04em", textTransform: "uppercase" }}>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Konten</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Platform</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Dipublikasi</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA", textAlign: "right" }}>Views</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA", textAlign: "right" }}>Likes</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA", textAlign: "right" }}>Komentar</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA", textAlign: "right" }}>Shares</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA", textAlign: "right" }}>Saves</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>vs baseline</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Topik (AI)</th>
+                  <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Analisis AI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredContents.map(c => (
+                  <tr key={c.id}>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC" }}>
+                      <Link to={`/contents/${c.id}`} style={{ display: "flex", gap: "10px", alignItems: "center", textDecoration: "none", color: "#17212B" }}>
+                        <div style={{ width: "48px", height: "48px", borderRadius: "8px", background: "#E3E7E1", flex: "none", display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
+                          {c.platform === 'Instagram' ? '📸' : '🎵'}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: "500", color: "#0E5A63" }}>{c.title}</div>
+                          <div style={{ fontSize: "12px", color: "#5B6672" }}>{c.format}</div>
+                        </div>
+                      </Link>
+                    </td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC" }}>{c.platform}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC" }}>{c.date}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC", textAlign: "right", fontWeight: 500 }}>{c.views}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC", textAlign: "right" }}>{c.likes}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC", textAlign: "right" }}>{c.comments}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC", textAlign: "right" }}>{c.shares}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC", textAlign: "right", color: "#5B6672" }}>{c.saves}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC" }}>
+                      <span style={{
+                        padding: "2px 9px",
+                        borderRadius: "999px",
+                        background: c.baseline === 'Above' ? "#E0EFF1" : c.baseline === 'Near' ? "#E9ECEF" : "#FBEFD6",
+                        color: c.baseline === 'Above' ? "#0B4A52" : c.baseline === 'Near' ? "#3B4651" : "#7A4A00",
+                        fontSize: "12px",
+                        fontWeight: "500"
+                      }}>
+                        {c.baseline}
+                      </span>
+                    </td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC" }}>{c.topic}</td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid #EEF0EC" }}>
+                      <span style={{
+                        padding: "2px 9px",
+                        borderRadius: "999px",
+                        background: c.aiStatus === 'Selesai' ? "#E2F1E6" : c.aiStatus === 'Dalam antrean' ? "#E0EFF1" : "#FBEFD6",
+                        color: c.aiStatus === 'Selesai' ? "#1F5E34" : c.aiStatus === 'Dalam antrean' ? "#0B4A52" : "#7A4A00",
+                        fontSize: "12px",
+                        fontWeight: "500"
+                      }}>
+                        {c.aiStatus}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginTop: '8px' }}>
+            {filteredContents.map(c => (
+              <div key={c.id} style={{ border: '1px solid #DDE1DA', borderRadius: '10px', padding: '16px', background: '#fff', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#E3E7E1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
+                      {c.platform === 'Instagram' ? '📸' : '🎵'}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '12px', color: '#5B6672' }}>{c.platform} · {c.date}</div>
+                      <div style={{ fontSize: '12px', fontWeight: 500, color: '#3B4651' }}>{c.format}</div>
+                    </div>
+                  </div>
+                  <span style={{
+                    padding: '2px 8px',
+                    borderRadius: '999px',
+                    background: c.baseline === 'Above' ? '#E0EFF1' : c.baseline === 'Near' ? '#E9ECEF' : '#FBEFD6',
+                    color: c.baseline === 'Above' ? '#0B4A52' : c.baseline === 'Near' ? '#3B4651' : '#7A4A00',
+                    fontSize: '11px',
+                    fontWeight: 500
+                  }}>
+                    {c.baseline}
+                  </span>
+                </div>
+                <Link to={`/contents/${c.id}`} style={{ fontSize: '15px', fontWeight: 600, color: '#17212B', textDecoration: 'none' }}>
+                  {c.title}
+                </Link>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #EEF0EC', paddingTop: '10px', fontSize: '13px' }}>
+                  <div>Views: <b>{c.views}</b></div>
+                  <div>Likes: <b>{c.likes}</b></div>
+                  <div>Komentar: <b>{c.comments}</b></div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
+                  <span style={{ color: '#5B6672' }}>{c.topic}</span>
+                  <Link to={`/contents/${c.id}`} style={{ color: '#0E5A63', fontWeight: 500 }}>
+                    Buka detail →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "12px", paddingTop: "16px", fontSize: "13px", color: "#5B6672" }}>
+          <span>Menampilkan 1–{filteredContents.length} dari {filteredContents.length} konten</span>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button type="button" style={{ height: "36px", padding: "0 14px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "13px", fontFamily: "inherit", cursor: "pointer" }}>Sebelumnya</button>
+            <button type="button" style={{ height: "36px", padding: "0 14px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "13px", fontFamily: "inherit", cursor: "pointer" }}>Berikutnya</button>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
+
+export default ContentExplorerPage;

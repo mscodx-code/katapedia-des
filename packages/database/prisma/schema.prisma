@@ -103,6 +103,8 @@ model User {
   passwordHash String
   role         UserRole   @default(ANALYST)
   avatarUrl    String?
+  isActive     Boolean    @default(true)
+  lastLoginAt  DateTime?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -365,3 +367,18 @@ model AuditLog {
   @@index([tenantId, createdAt])
   @@map("audit_logs")
 }
+
+model InstagramWebhookDelivery {
+  id          String   @id @default(cuid())
+  deliveryKey String   @unique
+  appKey      String
+  provider    String   @default("instagram")
+  payload     Json
+  status      String   @default("received")
+  receivedAt  DateTime @default(now())
+
+  @@index([status, receivedAt])
+  @@index([receivedAt])
+  @@map("instagram_webhook_deliveries")
+}
+

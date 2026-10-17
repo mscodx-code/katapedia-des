@@ -249,15 +249,59 @@ export const UserSchema = z.object({
   role: UserRoleEnum,
   tenantId: z.string(),
   avatarUrl: z.string().optional().nullable(),
-  createdAt: z.string()
+  isActive: z.boolean().default(true),
+  lastLoginAt: z.string().optional().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string().optional()
 });
 export type User = z.infer<typeof UserSchema>;
 
 export const LoginRequestSchema = z.object({
   email: z.string().email('Format email tidak valid'),
-  password: z.string().min(6, 'Password minimal 6 karakter')
+  password: z.string().min(6, 'Password minimal 6 karakter'),
+  captchaToken: z.string().optional().nullable()
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
+
+export const CreateUserSchema = z.object({
+  email: z.string().email('Format email tidak valid'),
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  password: z.string().min(6, 'Password minimal 6 karakter'),
+  role: UserRoleEnum.default('ANALYST'),
+  tenantId: z.string().optional()
+});
+export type CreateUserInput = z.infer<typeof CreateUserSchema>;
+
+export const UpdateUserSchema = z.object({
+  name: z.string().min(2).optional(),
+  role: UserRoleEnum.optional(),
+  password: z.string().min(6).optional(),
+  isActive: z.boolean().optional()
+});
+export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+
+export const UserQuerySchema = z.object({
+  search: z.string().optional(),
+  role: UserRoleEnum.optional(),
+  isActive: z.preprocess((val) => (val === 'true' ? true : val === 'false' ? false : val), z.boolean().optional()),
+  page: z.preprocess((val) => Number(val) || 1, z.number().int().positive().default(1)),
+  pageSize: z.preprocess((val) => Number(val) || 20, z.number().int().positive().default(20))
+});
+export type UserQueryInput = z.infer<typeof UserQuerySchema>;
+
+export const AuditLogSchema = z.object({
+  id: z.string(),
+  tenantId: z.string(),
+  userId: z.string().optional().nullable(),
+  userName: z.string().optional().nullable(),
+  userEmail: z.string().optional().nullable(),
+  action: z.string(),
+  entity: z.string(),
+  entityId: z.string(),
+  details: z.record(z.any()).default({}),
+  createdAt: z.string()
+});
+export type AuditLog = z.infer<typeof AuditLogSchema>;
 
 export const TenantSchema = z.object({
   id: z.string(),
