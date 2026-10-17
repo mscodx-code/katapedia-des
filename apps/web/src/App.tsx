@@ -32,7 +32,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
-  if (location.pathname === '/login') {
+  if (
+    location.pathname === '/login' ||
+    location.pathname === '/privacy-policy' ||
+    location.pathname === '/privacy-policy.html'
+  ) {
     return <>{children}</>;
   }
 
@@ -83,6 +87,34 @@ export const App: React.FC = () => {
               <Route path="/historical-trend" element={<HistoricalTrendPage />} />
               <Route path="/data-quality" element={<DataQualityPage />} />
               <Route path="/admin" element={<AdminMasterDataPage />} />
+              <Route
+                path="/privacy-policy"
+                element={
+                  <div style={{ padding: '24px', textAlign: 'center', background: '#fff', minHeight: '100vh' }}>
+                    <p>Membuka Kebijakan Privasi...</p>
+                    <a href="/privacy-policy.html" style={{ color: '#2155d6' }}>
+                      Klik di sini jika tidak terbuka otomatis
+                    </a>
+                    {(() => {
+                      if (typeof window !== 'undefined') {
+                        window.location.replace('/privacy-policy.html');
+                      }
+                      return null;
+                    })()}
+                  </div>
+                }
+              />
+              <Route
+                path="/privacy-policy.html"
+                element={
+                  <div style={{ padding: '24px', textAlign: 'center', background: '#fff', minHeight: '100vh' }}>
+                    <p>Membuka Kebijakan Privasi...</p>
+                    <a href="/privacy-policy.html" style={{ color: '#2155d6' }}>
+                      Klik di sini jika tidak terbuka otomatis
+                    </a>
+                  </div>
+                }
+              />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </AppLayout>

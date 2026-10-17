@@ -24,10 +24,26 @@ export function getInstagramWebhookConfig(): InstagramWebhookConfig {
     verifyToken: process.env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN || 'ded_ig_58b5bac5ff337238301eb77a4cabe026fc9d284819cc341a',
     appSecret: process.env.META_WEBHOOK_APP_SECRET || 'ISI_APP_SECRET_APLIKASI_PEMILIK_WEBHOOK',
     appKey: process.env.INSTAGRAM_WEBHOOK_APP_KEY || 'ded-instagram-production',
-    publicAppOrigin: process.env.PUBLIC_APP_ORIGIN || 'https://katapedia.mscode.id',
+    publicAppOrigin: process.env.PUBLIC_APP_ORIGIN || 'https://ded.katapedia.win',
     maxBodyBytes: Number(process.env.INSTAGRAM_WEBHOOK_MAX_BODY_BYTES) || 1048576, // 1 MiB
     retentionDays: Number(process.env.INSTAGRAM_WEBHOOK_RETENTION_DAYS) || 7
   };
+}
+
+export function resolveWebhookOrigin(request?: FastifyRequest): string {
+  if (request) {
+    const forwardedHost = (request.headers['x-forwarded-host'] || request.headers.host) as string | undefined;
+    if (forwardedHost) {
+      const cleanHost = forwardedHost.split(',')[0].trim().toLowerCase();
+      if (cleanHost.includes('katapedia.mscode.id')) {
+        return 'https://katapedia.mscode.id';
+      }
+      if (cleanHost.includes('ded.katapedia.win')) {
+        return 'https://ded.katapedia.win';
+      }
+    }
+  }
+  return process.env.PUBLIC_APP_ORIGIN || 'https://ded.katapedia.win';
 }
 
 export async function instagramWebhookRoutes(app: FastifyInstance) {
@@ -255,10 +271,27 @@ export async function instagramWebhookRoutes(app: FastifyInstance) {
       })
     ]);
 
+    const currentOrigin = resolveWebhookOrigin(request);
+    const productionOrigin = 'https://ded.katapedia.win';
+    const stagingOrigin = 'https://katapedia.mscode.id';
+
     return {
       data: {
         configured: isConfigured,
-        webhookUrl: `${config.publicAppOrigin}/api/integrations/instagram/webhook`,
+        webhookUrl: `${currentOrigin}/api/integrations/instagram/webhook`,
+        privacyPolicyUrl: `${currentOrigin}/privacy-policy.html`,
+        environments: {
+          production: {
+            origin: productionOrigin,
+            webhookUrl: `${productionOrigin}/api/integrations/instagram/webhook`,
+            privacyPolicyUrl: `${productionOrigin}/privacy-policy.html`
+          },
+          staging: {
+            origin: stagingOrigin,
+            webhookUrl: `${stagingOrigin}/api/integrations/instagram/webhook`,
+            privacyPolicyUrl: `${stagingOrigin}/privacy-policy.html`
+          }
+        },
         appKey: config.appKey,
         provider: 'instagram',
         metaVerificationStatus: 'pending_meta_verification',
@@ -269,7 +302,10 @@ export async function instagramWebhookRoutes(app: FastifyInstance) {
         lastReceivedAt: latestDelivery?.receivedAt ? latestDelivery.receivedAt.toISOString() : null,
         retentionDays: config.retentionDays,
         instructions: {
-          callbackUrl: `${config.publicAppOrigin}/api/integrations/instagram/webhook`,
+          callbackUrl: `${currentOrigin}/api/integrations/instagram/webhook`,
+          productionCallbackUrl: `${productionOrigin}/api/integrations/instagram/webhook`,
+          stagingCallbackUrl: `${stagingOrigin}/api/integrations/instagram/webhook`,
+          privacyPolicyUrl: `${currentOrigin}/privacy-policy.html`,
           clientCertificate: 'DISABLED',
           note: 'Verifikasi endpoint di Meta Developer menggunakan Callback URL dan Verifikasi Token yang sama.'
         }

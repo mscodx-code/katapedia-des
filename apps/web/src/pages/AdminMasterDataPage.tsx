@@ -729,51 +729,96 @@ export const AdminMasterDataPage: React.FC = () => {
                 Konfigurasi Webhook di Meta Developer
               </h3>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px' }}>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#5B6672', marginBottom: '4px' }}>
-                    1. URL Callback (Meta Dashboard):
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#17212B', marginBottom: '4px' }}>
+                    1. URL Callback Webhook (Meta Dashboard):
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: '#fff',
-                      border: '1px solid #DDE1DA',
-                      borderRadius: '6px',
-                      padding: '6px 10px',
-                      fontFamily: "'IBM Plex Mono', monospace",
-                      fontSize: '12px'
-                    }}
-                  >
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {webhookStatus?.data?.webhookUrl || 'https://katapedia.mscode.id/api/integrations/instagram/webhook'}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(webhookStatus?.data?.webhookUrl || 'https://katapedia.mscode.id/api/integrations/instagram/webhook');
-                        showToast('URL Callback disalin ke clipboard');
-                      }}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div
                       style={{
-                        background: '#E0EFF1',
-                        border: 'none',
-                        color: '#0B4A52',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        marginLeft: '8px'
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: '#fff',
+                        border: '1px solid #DDE1DA',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: '11px'
                       }}
                     >
-                      Salin
-                    </button>
+                      <span style={{ minWidth: '85px', fontSize: '10px', color: '#0B4A52', fontWeight: 700 }}>
+                        [PRODUKSI]
+                      </span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        https://ded.katapedia.win/api/integrations/instagram/webhook
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('https://ded.katapedia.win/api/integrations/instagram/webhook');
+                          showToast('URL Produksi disalin ke clipboard');
+                        }}
+                        style={{
+                          background: '#E0EFF1',
+                          border: 'none',
+                          color: '#0B4A52',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          marginLeft: '8px'
+                        }}
+                      >
+                        Salin
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: '#FAFBF9',
+                        border: '1px solid #E3E7E1',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: '11px'
+                      }}
+                    >
+                      <span style={{ minWidth: '85px', fontSize: '10px', color: '#5B6672', fontWeight: 700 }}>
+                        [STAGING]
+                      </span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        https://katapedia.mscode.id/api/integrations/instagram/webhook
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('https://katapedia.mscode.id/api/integrations/instagram/webhook');
+                          showToast('URL Staging disalin ke clipboard');
+                        }}
+                        style={{
+                          background: '#EAEFE8',
+                          border: 'none',
+                          color: '#344054',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          marginLeft: '8px'
+                        }}
+                      >
+                        Salin
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '12px', color: '#5B6672', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#17212B', marginBottom: '4px' }}>
                     2. Verifikasi Token:
                   </div>
                   <div
@@ -785,7 +830,7 @@ export const AdminMasterDataPage: React.FC = () => {
                       borderRadius: '6px',
                       padding: '6px 10px',
                       fontFamily: "'IBM Plex Mono', monospace",
-                      fontSize: '12px'
+                      fontSize: '11px'
                     }}
                   >
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -811,6 +856,110 @@ export const AdminMasterDataPage: React.FC = () => {
                     >
                       Salin
                     </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#17212B', marginBottom: '4px' }}>
+                    3. URL Kebijakan Privasi (Untuk Tinjauan Aplikasi Meta):
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: '#fff',
+                        border: '1px solid #DDE1DA',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: '11px'
+                      }}
+                    >
+                      <span style={{ minWidth: '85px', fontSize: '10px', color: '#0B4A52', fontWeight: 700 }}>
+                        [PRODUKSI]
+                      </span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        https://ded.katapedia.win/privacy-policy.html
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('https://ded.katapedia.win/privacy-policy.html');
+                          showToast('URL Privasi Produksi disalin');
+                        }}
+                        style={{
+                          background: '#E0EFF1',
+                          border: 'none',
+                          color: '#0B4A52',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          marginLeft: '8px'
+                        }}
+                      >
+                        Salin
+                      </button>
+                      <a
+                        href="/privacy-policy.html"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          background: '#F0F4EE',
+                          color: '#1C3120',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          textDecoration: 'none',
+                          marginLeft: '6px'
+                        }}
+                      >
+                        Buka
+                      </a>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: '#FAFBF9',
+                        border: '1px solid #E3E7E1',
+                        borderRadius: '6px',
+                        padding: '6px 10px',
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: '11px'
+                      }}
+                    >
+                      <span style={{ minWidth: '85px', fontSize: '10px', color: '#5B6672', fontWeight: 700 }}>
+                        [STAGING]
+                      </span>
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        https://katapedia.mscode.id/privacy-policy.html
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText('https://katapedia.mscode.id/privacy-policy.html');
+                          showToast('URL Privasi Staging disalin');
+                        }}
+                        style={{
+                          background: '#EAEFE8',
+                          border: 'none',
+                          color: '#344054',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          marginLeft: '8px'
+                        }}
+                      >
+                        Salin
+                      </button>
+                    </div>
                   </div>
                 </div>
 

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="Kebijakan Privasi Digital Electability Dashboard (DED) oleh Katapedia: data Instagram, izin akses, penggunaan data, dan permintaan penghapusan.">
+  <title>Kebijakan Privasi — Digital Electability Dashboard | Katapedia</title>
+  <link rel="canonical" href="https://ded.katapedia.win/privacy-policy.html">
+  <!--
+    CATATAN UNTUK PENGELOLA SEBELUM PUBLIKASI:
+    1. Ganti ISI_EMAIL_PRIVASI_KATAPEDIA dengan alamat email aktif penerima
+       pertanyaan privasi dan permintaan penghapusan. Tambahkan mailto bila sesuai.
+    2. Konfirmasikan identitas pengelola dan sesuaikan ketentuan dengan praktik
+       penyimpanan, pengamanan, retensi, serta fitur yang benar-benar digunakan.
+    3. Jika domain berubah, perbarui canonical dan tautan menuju aplikasi.
+    4. Simpan file pada public/privacy-policy.html untuk proyek Vite.
+       Halaman harus dapat dibuka publik tanpa login dan tanpa challenge interaktif.
+    Halaman ini tidak memuat analytics, font eksternal, cookie, atau JavaScript.
+  -->
+  <style>
+    :root{--ink:#152d44;--body:#42566b;--muted:#6b7d8f;--blue:#2155d6;--teal:#0a796b;--line:#e1e8ef;--paper:#fff;--wash:#f5f8fb;--soft:#edf3ff;--radius:20px}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:100px}
+    body{margin:0;background:var(--wash);color:var(--body);font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:var(--blue);text-underline-offset:3px}
+    a:hover{text-decoration-thickness:2px}
+    a:focus-visible,summary:focus-visible{outline:3px solid #90adff;outline-offset:5px;border-radius:4px}
+    .skip{position:absolute;left:16px;top:-100px;background:var(--ink);color:white;padding:10px 16px;z-index:20}
+    .skip:focus{top:10px}
+    .shell{width:min(1160px,calc(100% - 72px));margin-inline:auto}
+    .topbar{background:#fff;border-bottom:1px solid var(--line)}
+    .topbar-inner{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:14px;color:var(--ink);text-decoration:none}
+    .brand-mark{display:flex;align-items:center;justify-content:center;width:48px;height:48px;background:var(--ink);border-radius:13px;color:white;font-size:14px;font-weight:800;letter-spacing:.04em}
+    .brand-text{display:flex;flex-direction:column;line-height:1.4}
+    .brand-name{font-size:15px;font-weight:750}
+    .brand-owner{color:var(--muted);font-size:12px;letter-spacing:.025em}
+    .topnav{display:flex;align-items:center;gap:25px;font-size:13px}
+    .topnav a{color:var(--body);text-decoration:none}
+    .topnav a:hover{color:var(--blue)}
+    .topnav .nav-action{color:var(--blue);background:var(--soft);padding:8px 14px;border-radius:9px;font-weight:650}
+    .hero{padding:57px 0 34px}
+    .eyebrow{display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--teal);text-transform:uppercase}
+    .eyebrow-dot{height:7px;width:7px;border-radius:100%;background:var(--teal)}
+    h1{font-size:clamp(36px,4.6vw,58px);line-height:1.13;letter-spacing:-.045em;color:var(--ink);margin:17px 0 19px;font-weight:760}
+    .hero-description{font-size:18px;line-height:1.75;max-width:775px;margin:0}
+    .hero-description strong{font-weight:650;color:var(--ink)}
+    .meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px 22px;margin-top:25px;font-size:12px;color:var(--muted)}
+    .meta-label{display:inline-flex;align-items:center;gap:7px}
+    .meta-label:before{content:"";height:4px;width:4px;border-radius:50%;background:#a0b0c0}
+    .overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:0 0 37px}
+    .overview-card{padding:20px 22px;background:#fff;border:1px solid var(--line);border-radius:14px}
+    .overview-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:750;margin:0 0 7px}
+    .overview-card p:last-child{font-size:13px;line-height:1.65;margin:0}
+    .overview-card strong{color:var(--ink);font-weight:700}
+    .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:39px;align-items:start;padding-bottom:56px}
+    .toc{position:sticky;top:30px;padding-top:10px}
+    .toc-title{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted);margin:0 0 17px}
+    .toc ol{list-style:none;padding:0;margin:0;border-left:1px solid #d6e0e9}
+    .toc li{margin:0}
+    .toc a{display:block;font-size:12px;line-height:1.5;color:var(--muted);padding:10px 0 10px 18px;text-decoration:none}
+    .toc a:hover{color:var(--blue);background:#edf3fa;border-radius:0 7px 7px 0}
+    .toc .toc-important{font-weight:700;color:var(--blue)}
+    .toc-note{font-size:11px;color:var(--muted);line-height:1.75;margin:24px 8px 0 18px}
+    .policy{min-width:0;padding:39px 44px 32px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 30px rgba(26,48,74,.025)}
+    .intro{font-size:14px;line-height:1.85;margin:0 0 28px;color:var(--body)}
+    .policy section{padding-top:29px;margin-top:29px;border-top:1px solid var(--line);scroll-margin-top:30px}
+    .policy section:first-of-type{border-top:0;margin-top:0;padding-top:0}
+    h2{font-size:21px;line-height:1.45;letter-spacing:-.025em;font-weight:750;margin:0 0 15px;color:var(--ink)}
+    h2 .number{display:inline-block;color:#8495a7;font-size:11px;letter-spacing:.04em;vertical-align:3px;margin-right:11px;font-weight:650}
+    h3{font-size:15px;line-height:1.6;color:var(--ink);margin:22px 0 8px;font-weight:700}
+    .policy p,.policy li{font-size:14px;line-height:1.85}
+    .policy p{margin:0 0 13px}
+    .policy p:last-child{margin-bottom:0}
+    .policy strong{font-weight:680;color:var(--ink)}
+    .policy ul,.policy ol{padding-left:22px;margin:11px 0 16px}
+    .policy li{padding-left:4px;margin:7px 0}
+    .info-box{padding:17px 19px;background:#f0f7f7;border-left:3px solid var(--teal);border-radius:0 10px 10px 0;margin:18px 0;color:#30544f}
+    .info-box p{font-size:13px;line-height:1.8}
+    .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:17px 0 15px}
+    table{border-collapse:collapse;width:100%;font-size:12px;line-height:1.75;text-align:left}
+    th{color:var(--ink);font-size:11px;font-weight:750;background:#f6f8fb}
+    th,td{padding:13px 15px;vertical-align:top;border-bottom:1px solid var(--line)}
+    td:first-child{width:28%;font-weight:650;color:var(--ink)}
+    tr:last-child td{border-bottom:0}
+    .step-list{counter-reset:request;list-style:none!important;padding:0!important;margin:18px 0!important}
+    .step-list li{position:relative;min-height:37px;padding:1px 0 0 43px!important;margin:16px 0!important}
+    .step-list li:before{counter-increment:request;content:counter(request);position:absolute;top:2px;left:0;width:27px;height:27px;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:8px;color:var(--blue);font-size:12px;font-weight:750}
+    .contact-box{border:1px solid var(--line);border-radius:13px;padding:22px 24px;background:#f8fafc;margin-top:16px}
+    .contact-box dl{margin:0}
+    .contact-box dt{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:750;margin-top:13px}
+    .contact-box dt:first-child{margin-top:0}
+    .contact-box dd{margin:3px 0 0;font-size:14px;color:var(--ink);overflow-wrap:anywhere}
+    .contact-placeholder{display:inline-block;font-size:12px!important;color:#8a5814!important;background:#fff4db;border:1px dashed #d1ac62;padding:5px 9px;border-radius:6px}
+    .policy-end{padding-top:24px;margin-top:28px;border-top:1px solid var(--line);font-size:11px!important;color:var(--muted)}
+    .footer{border-top:1px solid var(--line);background:#fff}
+    .footer-inner{display:flex;justify-content:space-between;align-items:center;gap:22px;padding-block:24px;font-size:11px;color:var(--muted)}
+    .footer a{color:var(--muted);text-decoration:none}
+    .footer strong{color:var(--ink);font-weight:650}
+    @media(max-width:1000px){.shell{width:calc(100% - 48px)}.layout{grid-template-columns:180px minmax(0,1fr);gap:25px}.policy{padding:32px}.topnav{gap:17px}.overview-card{padding:18px}.brand-name{font-size:13px}}
+    @media(max-width:760px){
+      html{scroll-padding-top:20px}.shell{width:calc(100% - 36px)}
+      .topbar-inner{min-height:74px;gap:12px}.brand{gap:10px}.brand-mark{width:39px;height:39px;border-radius:11px;font-size:12px}
+      .brand-name{font-size:12px;max-width:175px}.brand-owner{font-size:10px}.topnav{gap:0}.topnav a:not(.nav-action){display:none}.topnav .nav-action{font-size:11px;padding:7px 10px;white-space:nowrap}
+      .hero{padding:35px 0 26px}h1{font-size:40px;line-height:1.15;margin:14px 0 16px}.hero-description{font-size:15px;line-height:1.8}.meta{font-size:11px;margin-top:19px;gap:7px 15px}
+      .overview{grid-template-columns:1fr;gap:9px;margin-bottom:25px}.overview-card{padding:14px 17px}.overview-label{margin-bottom:4px}.overview-card p:last-child{font-size:12px}
+      .layout{display:block;padding-bottom:32px}.toc{position:static;padding:0 0 22px}.toc-title{margin-bottom:10px}.toc ol{display:flex;flex-wrap:wrap;gap:6px;border:0}.toc a{font-size:11px;padding:5px 9px;border:1px solid var(--line);background:#fff;border-radius:7px}.toc a:hover{border-radius:7px}.toc-note{display:none}
+      .policy{padding:25px 21px;border-radius:16px}.policy section{padding-top:24px;margin-top:24px}h2{font-size:19px}h2 .number{margin-right:7px;font-size:10px}.policy p,.policy li{font-size:13px}.info-box{padding:14px 15px}.info-box p{font-size:12px}
+      th,td{padding:10px;font-size:11px}td:first-child{width:31%}.contact-box{padding:17px}.contact-box dd{font-size:13px}.contact-placeholder{font-size:10px!important}.footer-inner{align-items:flex-start;flex-direction:column;gap:6px;padding-block:20px}
+    }
+    @media(max-width:380px){.shell{width:calc(100% - 28px)}.brand-name{max-width:145px;font-size:11px}.brand-owner{font-size:9px}.topnav .nav-action{font-size:10px;padding:7px 8px}h1{font-size:36px}.policy{padding:22px 17px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    @media print{
+      body{background:#fff;color:#222;font-size:11pt}.shell{width:100%;max-width:none}.topnav,.toc,.overview,.skip{display:none}.topbar-inner{min-height:60px}.hero{padding:25px 0 20px}h1{font-size:28pt}.hero-description{font-size:11pt}.layout{display:block}.policy{border:0;box-shadow:none;padding:0}.policy section{break-inside:auto}.policy h2{break-after:avoid;font-size:15pt}.policy p,.policy li{font-size:10pt;line-height:1.65}.contact-box,.table-wrap{break-inside:avoid}a{color:inherit}.footer-inner{padding-block:16px}.contact-placeholder{background:none}
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#isi-kebijakan">Langsung ke isi kebijakan</a>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="/" aria-label="Digital Electability Dashboard oleh Katapedia">
+        <span class="brand-mark" aria-hidden="true">DED</span>
+        <span class="brand-text"><span class="brand-name">Digital Electability Dashboard</span><span class="brand-owner">Layanan oleh Katapedia</span></span>
+      </a>
+      <nav class="topnav" aria-label="Navigasi kebijakan">
+        <a href="#data-instagram">Data Instagram</a>
+        <a href="#kontak">Kontak</a>
+        <a class="nav-action" href="#penghapusan-data">Penghapusan data</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell" id="isi-kebijakan">
+    <div class="hero">
+      <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Privasi &amp; pelindungan data</div>
+      <h1>Kebijakan Privasi</h1>
+      <p class="hero-description">Cara <strong>Digital Electability Dashboard (DED)</strong> mengumpulkan, menggunakan, menyimpan, dan menghapus data saat Anda menggunakan layanan serta menghubungkan akun Instagram.</p>
+      <div class="meta">
+        <span>Terakhir diperbarui: <time datetime="2026-10-17">17 Oktober 2026</time></span>
+        <span class="meta-label">Pengelola: Katapedia</span>
+        <span class="meta-label">Bahasa Indonesia</span>
+      </div>
+    </div>
+
+    <div class="overview" aria-label="Ringkasan kebijakan">
+      <div class="overview-card"><p class="overview-label">Akses akun</p><p>Koneksi Instagram menggunakan <strong>otorisasi resmi</strong> dari pemilik atau pengelola akun yang berwenang.</p></div>
+      <div class="overview-card"><p class="overview-label">Tujuan data</p><p>Data dipakai untuk <strong>layanan analitik, pelaporan, dan keamanan</strong> sesuai fitur dan izin yang tersedia.</p></div>
+      <div class="overview-card"><p class="overview-label">Kendali Anda</p><p>Anda dapat <strong>mencabut akses</strong> serta mengajukan permintaan akses, perbaikan, atau penghapusan data.</p></div>
+    </div>
+
+    <div class="layout">
+      <aside class="toc" aria-label="Daftar isi">
+        <p class="toc-title">Isi kebijakan</p>
+        <ol>
+          <li><a href="#pengelola">Pengelola &amp; cakupan</a></li>
+          <li><a href="#data-dikumpulkan">Data yang diproses</a></li>
+          <li><a href="#data-instagram">Integrasi Instagram</a></li>
+          <li><a href="#tujuan">Tujuan &amp; dasar pemrosesan</a></li>
+          <li><a href="#penerima">Penerima data</a></li>
+          <li><a href="#keamanan">Penyimpanan &amp; keamanan</a></li>
+          <li><a href="#retensi">Retensi data</a></li>
+          <li><a href="#hak-anda">Hak Anda</a></li>
+          <li><a class="toc-important" href="#penghapusan-data">Pencabutan &amp; penghapusan</a></li>
+          <li><a href="#cookie">Cookie &amp; layanan lain</a></li>
+          <li><a href="#perubahan">Perubahan kebijakan</a></li>
+          <li><a href="#kontak">Kontak privasi</a></li>
+        </ol>
+        <p class="toc-note">Ringkasan di atas membantu navigasi. Ketentuan lengkap tersedia pada setiap bagian kebijakan ini.</p>
+      </aside>
+
+      <article class="policy" aria-label="Isi Kebijakan Privasi DED">
+        <p class="intro">Kebijakan ini menjelaskan pemrosesan data dalam layanan DED. Persetujuan khusus, termasuk izin menghubungkan akun media sosial, diminta melalui alur yang sesuai. Kebijakan ini tidak menggantikan pengaturan privasi atau ketentuan layanan platform yang Anda hubungkan.</p>
+
+        <section id="pengelola">
+          <h2><span class="number" aria-hidden="true">01</span>Pengelola dan cakupan</h2>
+          <p>DED dikelola oleh <strong>Katapedia</strong> untuk membantu pengguna organisasi memantau dan menganalisis kinerja akun serta konten digital. <strong>PT Mscode Inovasi Digital (mscode)</strong> mendukung pengembangan dan integrasi sistem sebagai mitra teknis sesuai penugasan Katapedia.</p>
+          <p>Kebijakan ini mencakup situs DED, akun pengguna, layanan dukungan, serta integrasi Instagram/Meta yang diaktifkan. Pemrosesan data untuk organisasi pengguna mengikuti kewenangan dan pengaturan akses organisasi tersebut.</p>
+        </section>
+
+        <section id="data-dikumpulkan">
+          <h2><span class="number" aria-hidden="true">02</span>Data yang kami proses</h2>
+          <p>Jenis data bergantung pada fitur yang digunakan, informasi yang diberikan, serta izin yang disetujui. Tidak semua kategori berikut tersedia atau diperlukan untuk setiap akun.</p>
+          <div class="table-wrap">
+            <table>
+              <caption style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0)">Kategori data dan contoh penggunaannya dalam DED</caption>
+              <thead><tr><th scope="col">Kategori</th><th scope="col">Contoh data</th></tr></thead>
+              <tbody>
+                <tr><td>Identitas pengguna DED</td><td>Nama, alamat email, organisasi, serta peran dan hak akses yang diberikan dalam layanan.</td></tr>
+                <tr><td>Profil Instagram</td><td>ID akun, nama pengguna, informasi profil, serta jumlah pengikut, akun yang diikuti, dan konten yang tersedia melalui API resmi.</td></tr>
+                <tr><td>Konten &amp; statistik</td><td>ID dan tautan konten, keterangan, waktu publikasi, jenis media, serta metrik seperti views, reach, likes, jumlah komentar, shares, dan saves yang diizinkan platform.</td></tr>
+                <tr><td>Otorisasi integrasi</td><td>Token akses, cakupan izin, status koneksi, dan masa berlaku yang diperlukan untuk menjalankan koneksi resmi.</td></tr>
+                <tr><td>Notifikasi &amp; catatan teknis</td><td>Event integrasi yang diaktifkan, waktu akses, alamat IP, informasi browser/perangkat, serta catatan kesalahan dan keamanan yang diperlukan.</td></tr>
+                <tr><td>Komunikasi dukungan</td><td>Informasi yang Anda kirim ketika meminta bantuan, mengajukan pertanyaan, atau menggunakan hak terkait data.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Isi komentar atau komunikasi diproses hanya apabila fitur terkait diaktifkan, diperlukan untuk tujuan layanan, dan memiliki izin yang sesuai. Analitik dasar menggunakan data profil, konten, dan statistik yang tersedia; izin tambahan dijelaskan ketika fitur terkait diaktifkan.</p>
+        </section>
+
+        <section id="data-instagram">
+          <h2><span class="number" aria-hidden="true">03</span>Integrasi Instagram dan persetujuan akses</h2>
+          <p>Data Instagram diperoleh melalui <strong>API resmi Meta/Instagram</strong> sesuai akses yang diberikan pemilik atau pengelola akun yang berwenang. Sebagian fitur membutuhkan akun profesional dan izin tertentu dari platform.</p>
+          <p>Pada alur koneksi resmi, Anda diarahkan ke halaman Instagram/Meta untuk login, menyelesaikan autentikasi yang diminta platform, dan menyetujui izin. DED menerima otorisasi berupa token untuk mengakses data yang diizinkan.</p>
+          <div class="info-box"><p><strong>DED tidak meminta atau menyimpan kata sandi Instagram maupun kode 2FA Anda.</strong> Kredensial login dan kode autentikasi dimasukkan langsung pada layanan resmi Instagram/Meta.</p></div>
+          <p>Otorisasi berlaku untuk akun dan cakupan izin yang disetujui. Koneksi satu akun tidak memberikan akses otomatis ke data privat akun lain. Ketersediaan dan pembaruan metrik mengikuti kemampuan API, izin, dan kebijakan platform.</p>
+        </section>
+
+        <section id="tujuan">
+          <h2><span class="number" aria-hidden="true">04</span>Tujuan dan dasar pemrosesan</h2>
+          <p>Data digunakan untuk:</p>
+          <ul>
+            <li>Menyediakan akses akun DED dan mengelola hak akses organisasi.</li>
+            <li>Menghubungkan akun yang Anda otorisasi serta menyajikan statistik, tren, dashboard, dan laporan.</li>
+            <li>Memperbarui data integrasi dan menjalankan fitur yang Anda pilih.</li>
+            <li>Menangani permintaan dukungan, pencabutan koneksi, dan penghapusan data.</li>
+            <li>Menjaga keamanan, menyelidiki gangguan, mencegah penyalahgunaan, dan memenuhi kewajiban hukum yang berlaku.</li>
+          </ul>
+          <p>Dasar pemrosesan disesuaikan dengan kegiatan yang dilakukan, termasuk persetujuan untuk integrasi, pelaksanaan layanan yang Anda atau organisasi Anda minta, kewajiban hukum, atau dasar lain yang sah sesuai peraturan. Persetujuan untuk integrasi dapat ditarik kembali.</p>
+        </section>
+
+        <section id="penerima">
+          <h2><span class="number" aria-hidden="true">05</span>Pihak yang dapat menerima data</h2>
+          <p>Akses diberikan secara terbatas untuk menjalankan layanan, yaitu kepada:</p>
+          <ul>
+            <li><strong>Pengguna dan administrator organisasi yang berwenang</strong>, sesuai peran serta ruang lingkup akses yang diberikan.</li>
+            <li><strong>Tim Katapedia dan mitra teknis mscode</strong>, sejauh diperlukan untuk dukungan, pemeliharaan, integrasi, atau keamanan layanan.</li>
+            <li><strong>Penyedia infrastruktur dan layanan pendukung</strong>, seperti hosting dan penyimpanan, sejauh diperlukan untuk menyediakan DED dengan kewajiban menjaga data.</li>
+            <li><strong>Meta/Instagram</strong>, dalam komunikasi yang diperlukan untuk otorisasi dan penggunaan API, sesuai kebijakan platform tersebut.</li>
+            <li><strong>Pihak yang diwajibkan oleh hukum</strong>, atau pihak lain atas instruksi atau persetujuan Anda yang sah.</li>
+          </ul>
+          <p><strong>Kami tidak menjual data pribadi atau token akses Instagram.</strong> Data organisasi tidak diberikan kepada organisasi lain hanya karena keduanya menggunakan DED.</p>
+        </section>
+
+        <section id="keamanan">
+          <h2><span class="number" aria-hidden="true">06</span>Penyimpanan, keamanan, dan pemrosesan lintas wilayah</h2>
+          <p>Data ditempatkan pada sistem yang digunakan untuk menyediakan layanan. Akses dibatasi berdasarkan kebutuhan tugas dan kewenangan. Pengamanan mencakup pengelolaan kredensial di server, pembatasan akses, pengamanan komunikasi, serta pemeliharaan sistem yang proporsional dengan risiko pemrosesan.</p>
+          <p>Token akses dikelola pada backend dan tidak ditampilkan sebagai informasi publik. Pengguna organisasi turut bertanggung jawab menjaga akses akun DED serta memberikan kewenangan hanya kepada pihak yang berhak.</p>
+          <p>Penggunaan Meta atau penyedia infrastruktur dapat melibatkan pemrosesan di luar Indonesia. Dalam hal terjadi transfer data lintas wilayah, pengelola memperhatikan persyaratan pelindungan data dan ketentuan transfer yang berlaku.</p>
+        </section>
+
+        <section id="retensi">
+          <h2><span class="number" aria-hidden="true">07</span>Jangka waktu penyimpanan</h2>
+          <p>Data disimpan selama diperlukan untuk tujuan pemrosesan, dengan mempertimbangkan status akun dan integrasi, kebutuhan layanan organisasi, permintaan penghapusan, ketentuan platform, serta kewajiban hukum.</p>
+          <ul>
+            <li><strong>Data akun DED</strong> disimpan selama akun atau hubungan layanan aktif, dan selanjutnya ditangani sesuai kebutuhan pengakhiran layanan serta kewajiban yang berlaku.</li>
+            <li><strong>Token dan data integrasi</strong> dipertahankan hanya selama akses masih sah dan diperlukan. Pencabutan akses, penghapusan koneksi, atau permintaan penghapusan ditindaklanjuti sesuai ketentuan platform dan hukum.</li>
+            <li><strong>Payload notifikasi dan log teknis</strong> disimpan terbatas untuk pemrosesan, pemeliharaan, keamanan, dan penanganan gangguan; tidak dipertahankan tanpa batas hanya karena tersedia.</li>
+            <li><strong>Salinan cadangan</strong> ditangani sesuai siklus retensi dan kewajiban keamanan, dengan pembatasan penggunaan atas data yang telah diminta untuk dihapus.</li>
+          </ul>
+          <p>Apabila sebagian data wajib dipertahankan karena ketentuan hukum atau penyelesaian sengketa yang sah, penyimpanannya dibatasi pada kebutuhan tersebut dan dijelaskan kepada pemohon jika relevan.</p>
+        </section>
+
+        <section id="hak-anda">
+          <h2><span class="number" aria-hidden="true">08</span>Hak terkait data Anda</h2>
+          <p>Sesuai ketentuan yang berlaku, termasuk Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi, Anda dapat mengajukan permintaan untuk:</p>
+          <ul>
+            <li>Memperoleh informasi mengenai pemrosesan dan akses terhadap data pribadi Anda.</li>
+            <li>Melengkapi, memperbarui, atau memperbaiki data yang tidak akurat.</li>
+            <li>Menarik persetujuan serta meminta penghentian atau pembatasan pemrosesan sesuai ketentuan.</li>
+            <li>Meminta penghapusan atau pemusnahan data sesuai hak dan batasan yang berlaku.</li>
+            <li>Menggunakan hak lain serta menyampaikan keberatan atau pengaduan yang tersedia menurut hukum.</li>
+          </ul>
+          <p>Permintaan dapat memerlukan verifikasi identitas dan kewenangan yang proporsional agar data tidak diberikan atau dihapus atas permintaan pihak yang tidak berhak.</p>
+        </section>
+
+        <section id="penghapusan-data">
+          <h2><span class="number" aria-hidden="true">09</span>Mencabut akses dan meminta penghapusan data</h2>
+          <h3>Menghentikan koneksi Instagram</h3>
+          <p>Anda dapat mencabut akses DED melalui pengaturan aplikasi dan situs web atau pengaturan akses yang disediakan Instagram/Meta. Nama menu dapat berubah mengikuti platform. Anda juga dapat meminta administrator DED menghentikan koneksi akun.</p>
+          <p>Setelah pencabutan diketahui, pengambilan data baru untuk koneksi tersebut dihentikan dan token ditangani untuk dinonaktifkan atau dihapus. Data Instagram yang tersimpan ditindaklanjuti untuk dihapus sesuai permintaan, ketentuan platform, dan hukum yang berlaku.</p>
+          <h3>Mengajukan permintaan penghapusan dari DED</h3>
+          <ol class="step-list">
+            <li>Hubungi <a href="#kontak">kontak privasi</a> di bawah dengan subjek <strong>“Permintaan Penghapusan Data DED”</strong>.</li>
+            <li>Cantumkan nama akun atau email DED, organisasi terkait, nama pengguna Instagram jika relevan, dan ruang lingkup data yang ingin dihapus.</li>
+            <li>Tim pengelola melakukan verifikasi yang diperlukan, menjelaskan ruang lingkup atau pengecualian yang berlaku, dan menindaklanjuti permintaan sesuai batas waktu hukum yang berlaku.</li>
+            <li>Konfirmasi hasil atau status penanganan disampaikan melalui kanal kontak yang Anda gunakan.</li>
+          </ol>
+          <p>Jangan mengirim kata sandi, access token, atau kode 2FA sebagai bagian dari permintaan. Jika Anda tidak lagi dapat login ke DED, permintaan tetap dapat dikirim melalui kontak privasi.</p>
+          <p>Penghapusan data dari DED tidak dengan sendirinya menghapus akun, postingan, atau data pada Instagram/Meta. Pengelolaan data pada platform asal mengikuti fitur dan ketentuan platform tersebut.</p>
+        </section>
+
+        <section id="cookie">
+          <h2><span class="number" aria-hidden="true">10</span>Cookie, layanan lain, dan pengguna anak</h2>
+          <p>Layanan DED dapat menggunakan cookie atau penyimpanan browser yang diperlukan untuk sesi, autentikasi, keamanan, dan preferensi pengguna. Penggunaan alat analitik atau pelacakan tambahan, apabila diaktifkan, dijelaskan melalui pemberitahuan dan pengaturan persetujuan yang sesuai.</p>
+          <p>Halaman atau tautan milik Instagram, Meta, dan layanan lain memiliki kebijakan privasi masing-masing. Anda dapat membaca <a href="https://privacycenter.instagram.com/policy/" target="_blank" rel="noopener noreferrer">Kebijakan Privasi Instagram/Meta</a> untuk memahami pemrosesan oleh platform tersebut.</p>
+          <p>DED ditujukan bagi pengguna organisasi dan pengelola akun yang berwenang, serta tidak dirancang sebagai layanan untuk anak. Jika terdapat data anak yang dikirim tanpa dasar pemrosesan yang sesuai, hubungi pengelola agar dapat ditindaklanjuti.</p>
+        </section>
+
+        <section id="perubahan">
+          <h2><span class="number" aria-hidden="true">11</span>Perubahan kebijakan</h2>
+          <p>Kebijakan dapat diperbarui apabila terdapat perubahan layanan, integrasi, praktik pemrosesan, atau ketentuan yang berlaku. Tanggal pembaruan ditampilkan di bagian atas halaman. Perubahan penting disampaikan melalui layanan atau kanal komunikasi yang relevan, dan persetujuan baru diminta apabila diperlukan.</p>
+        </section>
+
+        <section id="kontak">
+          <h2><span class="number" aria-hidden="true">12</span>Kontak privasi</h2>
+          <p>Untuk pertanyaan privasi, pelaksanaan hak terkait data, pencabutan koneksi, atau permintaan penghapusan, hubungi pengelola melalui alamat berikut.</p>
+          <div class="contact-box">
+            <dl>
+              <dt>Pengelola layanan</dt><dd><strong>Katapedia</strong> — Digital Electability Dashboard (DED)</dd>
+              <dt>Email kontak privasi</dt><dd><a href="mailto:privacy@katapedia.id" style="font-weight:600;color:var(--blue);text-decoration:none">privacy@katapedia.id</a></dd>
+              <dt>Mitra pengembangan teknis</dt><dd>PT Mscode Inovasi Digital (mscode)</dd>
+              <dt>Informasi yang membantu penanganan</dt><dd>Nama, email akun DED, organisasi, dan uraian permintaan. Sertakan nama pengguna Instagram jika terkait integrasi.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <p class="policy-end">Dokumen ini berlaku untuk layanan Digital Electability Dashboard (DED) yang dikelola Katapedia. Rujukan hukum: <a href="https://peraturan.bpk.go.id/Details/229798/uu-no-27-" target="_blank" rel="noopener noreferrer">UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi</a>.</p>
+      </article>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="shell footer-inner">
+      <span>© 2026 <strong>Katapedia</strong> · Digital Electability Dashboard</span>
+      <span>Mitra teknis: PT Mscode Inovasi Digital · <a href="#penghapusan-data">Penghapusan data</a></span>
+    </div>
+  </footer>
+</body>
+</html>
+
