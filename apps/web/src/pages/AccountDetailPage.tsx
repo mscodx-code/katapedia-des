@@ -9,6 +9,8 @@ interface MediaItem {
   timestamp: string;
   likeCount: number;
   commentCount: number;
+  reach: number;
+  saves: number;
   thumbnailUrl: string;
   permalink: string;
 }
@@ -22,6 +24,8 @@ const sampleMediaList: MediaItem[] = [
     timestamp: '14 Okt 2026, 10:15 WIB',
     likeCount: 1240,
     commentCount: 184,
+    reach: 14200,
+    saves: 184,
     thumbnailUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=500&auto=format&fit=crop&q=80',
     permalink: 'https://instagram.com/p/Cxyz123abc'
   },
@@ -33,6 +37,8 @@ const sampleMediaList: MediaItem[] = [
     timestamp: '12 Okt 2026, 15:40 WIB',
     likeCount: 2850,
     commentCount: 340,
+    reach: 38400,
+    saves: 420,
     thumbnailUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&auto=format&fit=crop&q=80',
     permalink: 'https://instagram.com/reel/Cxyz456def'
   },
@@ -44,6 +50,8 @@ const sampleMediaList: MediaItem[] = [
     timestamp: '9 Okt 2026, 08:30 WIB',
     likeCount: 980,
     commentCount: 92,
+    reach: 11800,
+    saves: 195,
     thumbnailUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&auto=format&fit=crop&q=80',
     permalink: 'https://instagram.com/p/Cxyz789ghi'
   },
@@ -55,6 +63,8 @@ const sampleMediaList: MediaItem[] = [
     timestamp: '5 Okt 2026, 19:20 WIB',
     likeCount: 1450,
     commentCount: 120,
+    reach: 16500,
+    saves: 98,
     thumbnailUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=500&auto=format&fit=crop&q=80',
     permalink: 'https://instagram.com/p/Cxyz012jkl'
   }
@@ -273,7 +283,7 @@ export const AccountDetailPage: React.FC = () => {
             cursor: "pointer"
           }}
         >
-          📊 Analisis Tren &amp; Frekuensi
+          📊 Insights &amp; Analisis Tren (instagram_business_manage_insights)
         </button>
         <button
           type="button"
@@ -300,7 +310,7 @@ export const AccountDetailPage: React.FC = () => {
             <div>
               <h2 style={{ margin: 0, fontSize: "18px", fontWeight: "700" }}>Postingan Media Terbaru dari Instagram</h2>
               <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#5B6672" }}>
-                Menampilkan data gambar, video, caption, jumlah likes dan komentar yang diizinkan oleh izin <code>instagram_business_basic</code>.
+                Menampilkan data gambar, video, caption, jumlah likes dan komentar (Basic) serta Reach dan Saves (Insights).
               </p>
             </div>
             <Link to="/contents" style={{ fontSize: "13px", color: "#0E5A63", fontWeight: 600, textDecoration: "none" }}>
@@ -371,13 +381,19 @@ export const AccountDetailPage: React.FC = () => {
                     {media.caption}
                   </p>
 
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "12px", borderTop: "1px solid #EEF0EC", fontSize: "13px" }}>
-                    <div style={{ display: "flex", gap: "12px" }}>
-                      <span title="Likes" style={{ color: "#E1306C", fontWeight: 600 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", paddingTop: "12px", borderTop: "1px solid #EEF0EC", fontSize: "12px", gap: "8px" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                      <span title="Likes (Basic)" style={{ color: "#E1306C", fontWeight: 600 }}>
                         ❤️ {media.likeCount.toLocaleString('id-ID')}
                       </span>
-                      <span title="Komentar" style={{ color: "#0E5A63", fontWeight: 600 }}>
+                      <span title="Komentar (Basic)" style={{ color: "#0E5A63", fontWeight: 600 }}>
                         💬 {media.commentCount.toLocaleString('id-ID')}
+                      </span>
+                      <span title="Jangkauan Unik (Insights)" style={{ color: "#1F5E34", fontWeight: 600 }}>
+                        👁️ {media.reach.toLocaleString('id-ID')} Reach
+                      </span>
+                      <span title="Disimpan (Insights)" style={{ color: "#7A4A00", fontWeight: 600 }}>
+                        💾 {media.saves.toLocaleString('id-ID')}
                       </span>
                     </div>
                     <a
@@ -398,7 +414,18 @@ export const AccountDetailPage: React.FC = () => {
 
       {/* TAB 2: Trend Analytics */}
       {activeTab === 'analytics' && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "stretch" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {/* Insights Explanation Header */}
+          <div style={{ background: "#F0F9F5", border: "1px solid #B8DEC0", borderRadius: "10px", padding: "16px 20px" }}>
+            <div style={{ fontWeight: 700, fontSize: "15px", color: "#1F5E34", marginBottom: "4px" }}>
+              📈 Penggunaan Izin Meta: instagram_business_manage_insights
+            </div>
+            <div style={{ fontSize: "13px", color: "#3B4651", lineHeight: "1.5" }}>
+              Izin ini digunakan DED untuk mengakses metrik performa mendalam yang tidak tersedia secara publik, mencakup <strong>total jangkauan unik (reach)</strong>, <strong>tayangan (impressions)</strong>, <strong>pertumbuhan pengikut harian</strong>, dan <strong>rasio simpan (saves)</strong>. Metrik ini membantu analis mengevaluasi penetrasi kampanye dan keterlibatan audiens secara objektif.
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "stretch" }}>
           <section style={{ flex: "1 1 440px", minWidth: "0", background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "20px" }}>
             <h2 style={{ margin: "0", fontSize: "16px", fontWeight: "600" }}>Pertumbuhan followers · 90 hari</h2>
             <p style={{ margin: "4px 0 10px", fontSize: "13px", color: "#5B6672" }}>Satu titik per snapshot pengukuran. Snapshot lama tidak ditimpa.</p>
@@ -421,6 +448,7 @@ export const AccountDetailPage: React.FC = () => {
             </svg>
           </section>
         </div>
+      </div>
       )}
 
       {/* TAB 3: Sync Log */}
