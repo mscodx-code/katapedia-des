@@ -4,11 +4,14 @@ import { Link } from 'react-router-dom';
 interface AccountSyncItem {
   id: string;
   name: string;
+  platform: 'INSTAGRAM' | 'TIKTOK';
   candidate: string;
   lastSync: string;
   syncStatus: 'Berhasil' | 'Gagal' | 'Retry terjadwal' | 'Syncing...';
   quality: 'Complete' | 'Partial' | 'Insufficient' | 'Stale';
   notes: string;
+  isLoggedIn: boolean;
+  connectedAt?: string;
 }
 
 interface AnomalyItem {
@@ -20,17 +23,121 @@ interface AnomalyItem {
   link?: { text: string; to: string };
 }
 
+// Icons
+const InstagramIcon: React.FC<{ size?: number; white?: boolean }> = ({ size = 15, white = false }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+    {white ? (
+      <>
+        <rect x="2" y="2" width="20" height="20" rx="5.5" stroke="#fff" strokeWidth="2" />
+        <circle cx="12" cy="12" r="4.2" stroke="#fff" strokeWidth="2" />
+        <circle cx="17.5" cy="6.5" r="1.2" fill="#fff" />
+      </>
+    ) : (
+      <>
+        <rect x="2" y="2" width="20" height="20" rx="5.5" fill="url(#dq-ig-grad)" />
+        <circle cx="12" cy="12" r="4.2" stroke="#fff" strokeWidth="1.8" />
+        <circle cx="17.5" cy="6.5" r="1.2" fill="#fff" />
+        <defs>
+          <linearGradient id="dq-ig-grad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#FED576" />
+            <stop offset="0.25" stopColor="#F47133" />
+            <stop offset="0.5" stopColor="#BC3081" />
+            <stop offset="0.75" stopColor="#4C63D2" />
+          </linearGradient>
+        </defs>
+      </>
+    )}
+  </svg>
+);
+
+const TikTokIcon: React.FC<{ size?: number; white?: boolean }> = ({ size = 15, white = false }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+    <path
+      d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-2.891 2.89 2.897 2.897 0 0 1-2.892-2.89 2.896 2.896 0 0 1 2.892-2.891c.33 0 .647.054.945.153V9.45a6.31 6.31 0 0 0-.945-.072 6.335 6.335 0 0 0-6.337 6.336 6.336 6.336 0 0 0 6.337 6.336 6.336 6.336 0 0 0 6.336-6.336V8.406a8.21 8.21 0 0 0 4.77 1.516V6.686z"
+      fill={white ? '#fff' : '#000'}
+    />
+  </svg>
+);
+
 export const DataQualityPage: React.FC = () => {
   const [notification, setNotification] = useState<string | null>(null);
   const [isRetryingAll, setIsRetryingAll] = useState(false);
 
+  // Modal states for OAuth login & account details
+  const [authModalAccount, setAuthModalAccount] = useState<AccountSyncItem | null>(null);
+  const [connectedInfoAccount, setConnectedInfoAccount] = useState<AccountSyncItem | null>(null);
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+
   const [accounts, setAccounts] = useState<AccountSyncItem[]>([
-    { id: '1', name: 'IG @handle_contoh', candidate: 'Bakal Caleg 01', lastSync: '13 Okt, 06:00', syncStatus: 'Berhasil', quality: 'Complete', notes: '—' },
-    { id: '2', name: 'TikTok @handle_contoh', candidate: 'Bakal Caleg 01', lastSync: '13 Okt, 06:00', syncStatus: 'Berhasil', quality: 'Partial', notes: 'Saves dan reach Not Available' },
-    { id: '3', name: 'IG @handle_contoh_07', candidate: 'Bakal Caleg 07', lastSync: '13 Okt, 06:00', syncStatus: 'Berhasil', quality: 'Complete', notes: '—' },
-    { id: '4', name: 'IG @handle_contoh_12', candidate: 'Bakal Caleg 12', lastSync: '10 Okt, 06:00', syncStatus: 'Gagal', quality: 'Stale', notes: 'Akses ditolak platform, 3 percobaan' },
-    { id: '5', name: 'TikTok @handle_contoh_08', candidate: 'Bakal Caleg 08', lastSync: '10 Okt, 06:00', syncStatus: 'Retry terjadwal', quality: 'Stale', notes: 'Akun berstatus Invalid, perlu verifikasi' },
-    { id: '6', name: 'TikTok @handle_contoh_06', candidate: 'Bakal Caleg 06', lastSync: '13 Okt, 06:00', syncStatus: 'Berhasil', quality: 'Insufficient', notes: 'Baru 11 hari data, baseline belum dihitung' },
+    {
+      id: '1',
+      name: 'IG @handle_contoh',
+      platform: 'INSTAGRAM',
+      candidate: 'Bakal Caleg 01',
+      lastSync: '13 Okt, 06:00',
+      syncStatus: 'Berhasil',
+      quality: 'Complete',
+      notes: '—',
+      isLoggedIn: true,
+      connectedAt: '13 Okt 2026, 05:45'
+    },
+    {
+      id: '2',
+      name: 'TikTok @handle_contoh',
+      platform: 'TIKTOK',
+      candidate: 'Bakal Caleg 01',
+      lastSync: '13 Okt, 06:00',
+      syncStatus: 'Berhasil',
+      quality: 'Partial',
+      notes: 'Saves dan reach Not Available',
+      isLoggedIn: true,
+      connectedAt: '13 Okt 2026, 05:50'
+    },
+    {
+      id: '3',
+      name: 'IG @handle_contoh_07',
+      platform: 'INSTAGRAM',
+      candidate: 'Bakal Caleg 07',
+      lastSync: '13 Okt, 06:00',
+      syncStatus: 'Berhasil',
+      quality: 'Complete',
+      notes: '—',
+      isLoggedIn: false
+    },
+    {
+      id: '4',
+      name: 'IG @handle_contoh_12',
+      platform: 'INSTAGRAM',
+      candidate: 'Bakal Caleg 12',
+      lastSync: '10 Okt, 06:00',
+      syncStatus: 'Gagal',
+      quality: 'Stale',
+      notes: 'Perlu login ulang Instagram untuk akses data',
+      isLoggedIn: false
+    },
+    {
+      id: '5',
+      name: 'TikTok @handle_contoh_08',
+      platform: 'TIKTOK',
+      candidate: 'Bakal Caleg 08',
+      lastSync: '10 Okt, 06:00',
+      syncStatus: 'Retry terjadwal',
+      quality: 'Stale',
+      notes: 'Akun berstatus Invalid, perlu verifikasi login',
+      isLoggedIn: false
+    },
+    {
+      id: '6',
+      name: 'TikTok @handle_contoh_06',
+      platform: 'TIKTOK',
+      candidate: 'Bakal Caleg 06',
+      lastSync: '13 Okt, 06:00',
+      syncStatus: 'Berhasil',
+      quality: 'Insufficient',
+      notes: 'Baru 11 hari data, baseline belum dihitung',
+      isLoggedIn: true,
+      connectedAt: '12 Okt 2026, 14:20'
+    },
   ]);
 
   const [anomalies, setAnomalies] = useState<AnomalyItem[]>([
@@ -45,7 +152,7 @@ export const DataQualityPage: React.FC = () => {
 
   const showNotification = (msg: string) => {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3500);
   };
 
   const handleRetryAll = () => {
@@ -80,12 +187,64 @@ export const DataQualityPage: React.FC = () => {
       setAccounts((prev) =>
         prev.map((acc) =>
           acc.id === id
-            ? { ...acc, syncStatus: 'Berhasil', quality: 'Complete', lastSync: 'Baru saja', notes: 'Sync ulang sukses' }
+            ? { ...acc, syncStatus: 'Berhasil', quality: 'Complete', lastSync: 'Baru saja', notes: 'Sinkronisasi data terbaru berhasil' }
             : acc
         )
       );
-      showNotification('Sync akun berhasil diperbarui!');
+      showNotification('Data akun berhasil disinkronkan!');
     }, 1000);
+  };
+
+  const handleOpenAuthModal = (acc: AccountSyncItem) => {
+    setAuthModalAccount(acc);
+  };
+
+  const handleConfirmAuth = () => {
+    if (!authModalAccount) return;
+    setIsAuthorizing(true);
+
+    setTimeout(() => {
+      setAccounts((prev) =>
+        prev.map((acc) =>
+          acc.id === authModalAccount.id
+            ? {
+                ...acc,
+                isLoggedIn: true,
+                syncStatus: 'Berhasil',
+                quality: 'Complete',
+                lastSync: 'Baru saja',
+                notes: authModalAccount.platform === 'INSTAGRAM'
+                  ? 'Terhubung resmi via Meta Graph API'
+                  : 'Terhubung resmi via TikTok Open API',
+                connectedAt: 'Baru saja'
+              }
+            : acc
+        )
+      );
+      setIsAuthorizing(false);
+      const accName = authModalAccount.name;
+      const isIg = authModalAccount.platform === 'INSTAGRAM';
+      setAuthModalAccount(null);
+      showNotification(`✓ Berhasil login ${isIg ? 'Instagram' : 'TikTok'}! Akun ${accName} terhubung & sinkronisasi data aktif.`);
+    }, 1200);
+  };
+
+  const handleDisconnect = (id: string) => {
+    setAccounts((prev) =>
+      prev.map((acc) =>
+        acc.id === id
+          ? {
+              ...acc,
+              isLoggedIn: false,
+              syncStatus: 'Gagal',
+              quality: 'Stale',
+              notes: 'Koneksi akun diputus, perlu login kembali'
+            }
+          : acc
+      )
+    );
+    setConnectedInfoAccount(null);
+    showNotification('Koneksi akun telah diputuskan.');
   };
 
   const handleReviewAnomaly = (id: string) => {
@@ -109,11 +268,330 @@ export const DataQualityPage: React.FC = () => {
   return (
     <main style={{ flex: "999 1 560px", minWidth: 0, padding: "28px 36px 48px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: "24px" }}>
       {notification && (
-        <div style={{ position: 'fixed', top: '24px', right: '24px', zIndex: 1000, background: '#17212B', color: '#fff', padding: '12px 20px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ color: '#0E5A63', fontWeight: 'bold' }}>✓</span> {notification}
+        <div style={{ position: 'fixed', top: '24px', right: '24px', zIndex: 10000, background: '#17212B', color: '#fff', padding: '12px 20px', borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.25)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ color: '#097E52', fontWeight: 'bold' }}>✓</span> {notification}
         </div>
       )}
 
+      {/* MODAL 1: Meta/Instagram & TikTok Authorization Dialog */}
+      {authModalAccount && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px'
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '480px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              overflow: 'hidden',
+              fontFamily: "'IBM Plex Sans', system-ui, sans-serif"
+            }}
+          >
+            {/* Branded Header */}
+            <div
+              style={{
+                background: authModalAccount.platform === 'INSTAGRAM'
+                  ? 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)'
+                  : '#111827',
+                color: '#fff',
+                padding: '24px 28px',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ display: 'inline-flex', padding: '10px', background: 'rgba(255,255,255,0.2)', borderRadius: '14px', marginBottom: '10px' }}>
+                {authModalAccount.platform === 'INSTAGRAM' ? (
+                  <InstagramIcon size={34} white />
+                ) : (
+                  <TikTokIcon size={34} white />
+                )}
+              </div>
+              <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: 700 }}>
+                {authModalAccount.platform === 'INSTAGRAM'
+                  ? 'Masuk dengan Akun Instagram'
+                  : 'Masuk dengan Akun TikTok'}
+              </h3>
+              <p style={{ margin: 0, fontSize: '13px', opacity: 0.9 }}>
+                Otorisasi akses resmi untuk Digital Electability Dashboard (DED)
+              </p>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              {/* Account target info */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  padding: '12px 16px',
+                  background: '#F8FAF9',
+                  border: '1px solid #E3E7E1',
+                  borderRadius: '10px'
+                }}
+              >
+                <div
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    background: '#0E5A63',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: '16px'
+                  }}
+                >
+                  {authModalAccount.name.charAt(authModalAccount.name.indexOf('@') + 1 || 0).toUpperCase()}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: '15px', color: '#17212B' }}>
+                    {authModalAccount.name}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                    Kandidat: {authModalAccount.candidate} · Akun Profesional
+                  </div>
+                </div>
+              </div>
+
+              {/* Permissions explanation */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#5B6672', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '8px' }}>
+                  Izin Akses API yang Diminta ({authModalAccount.platform === 'INSTAGRAM' ? 'Meta' : 'TikTok'}):
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                    <div>
+                      <strong style={{ color: '#17212B' }}>
+                        {authModalAccount.platform === 'INSTAGRAM' ? 'instagram_business_basic' : 'user.info.basic'}
+                      </strong>
+                      <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                        Membaca informasi profil, username, foto profil, dan postingan media.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <span style={{ color: '#097E52', fontWeight: 700 }}>✓</span>
+                    <div>
+                      <strong style={{ color: '#17212B' }}>
+                        {authModalAccount.platform === 'INSTAGRAM' ? 'instagram_business_manage_insights' : 'video.list'}
+                      </strong>
+                      <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                        Mengakses metrik tayangan, interaksi (likes, komentar, shares, saves), dan jangkauan audiens.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security reassurance */}
+              <div
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  background: '#F0F9F5',
+                  border: '1px solid #C6EAD8',
+                  color: '#135436',
+                  fontSize: '12px',
+                  lineHeight: '1.5'
+                }}
+              >
+                🔒 <strong>Aman &amp; Terenkripsi:</strong> DED tidak pernah meminta kata sandi akun Anda. Otorisasi berjalan aman sesuai protokol OAuth resmi.
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                <button
+                  type="button"
+                  onClick={() => setAuthModalAccount(null)}
+                  disabled={isAuthorizing}
+                  style={{
+                    flex: '1',
+                    height: '42px',
+                    borderRadius: '8px',
+                    border: '1px solid #DDE1DA',
+                    background: '#fff',
+                    color: '#3B4651',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmAuth}
+                  disabled={isAuthorizing}
+                  style={{
+                    flex: '2',
+                    height: '42px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: authModalAccount.platform === 'INSTAGRAM'
+                      ? 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'
+                      : '#000',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    cursor: isAuthorizing ? 'wait' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                  }}
+                >
+                  {isAuthorizing ? (
+                    <span>Menghubungkan ke API...</span>
+                  ) : (
+                    <>
+                      {authModalAccount.platform === 'INSTAGRAM' ? <InstagramIcon size={16} white /> : <TikTokIcon size={16} white />}
+                      <span>Otorisasi &amp; Mulai Sync</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: Connected Account Details & Option to Disconnect */}
+      {connectedInfoAccount && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px'
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '440px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              overflow: 'hidden',
+              fontFamily: "'IBM Plex Sans', system-ui, sans-serif"
+            }}
+          >
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #EEF0EC', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {connectedInfoAccount.platform === 'INSTAGRAM' ? <InstagramIcon size={20} /> : <TikTokIcon size={20} />}
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>
+                  Detail Status Akun Terhubung
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConnectedInfoAccount(null)}
+                style={{ background: 'none', border: 'none', fontSize: '18px', color: '#5B6672', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                <span style={{ color: '#5B6672' }}>Nama Akun:</span>
+                <strong style={{ color: '#17212B' }}>{connectedInfoAccount.name}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                <span style={{ color: '#5B6672' }}>Status Autentikasi:</span>
+                <span style={{ color: '#1F5E34', fontWeight: 600, background: '#E2F1E6', padding: '2px 8px', borderRadius: '4px' }}>
+                  ✓ Sudah Login (Token Aktif)
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                <span style={{ color: '#5B6672' }}>Kandidat Terkait:</span>
+                <span>{connectedInfoAccount.candidate}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F4F6F3', paddingBottom: '8px' }}>
+                <span style={{ color: '#5B6672' }}>Izin Diberikan:</span>
+                <span style={{ fontFamily: 'monospace', fontSize: '11px', color: '#0E5A63' }}>
+                  {connectedInfoAccount.platform === 'INSTAGRAM' ? 'basic, insights' : 'basic, video'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
+                <span style={{ color: '#5B6672' }}>Sinkronisasi Terakhir:</span>
+                <span>{connectedInfoAccount.lastSync}</span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const accId = connectedInfoAccount.id;
+                    setConnectedInfoAccount(null);
+                    handleRetrySingle(accId);
+                  }}
+                  style={{
+                    flex: 1,
+                    height: '38px',
+                    borderRadius: '8px',
+                    border: '1px solid #0E5A63',
+                    background: '#0E5A63',
+                    color: '#fff',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Sync Ulang Sekarang
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDisconnect(connectedInfoAccount.id)}
+                  style={{
+                    height: '38px',
+                    padding: '0 14px',
+                    borderRadius: '8px',
+                    border: '1px solid #FBE4E1',
+                    background: '#FFF5F5',
+                    color: '#8E2420',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Putuskan Sambungan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Page Header */}
       <header style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: "16px" }}>
         <div>
           <div style={{ fontSize: "13px", color: "#5B6672" }}>Pemantauan</div>
@@ -144,6 +622,7 @@ export const DataQualityPage: React.FC = () => {
         </div>
       </header>
 
+      {/* Metric Summary Cards */}
       <section aria-label="Ringkasan kualitas data" style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
         <div style={{ flex: "1 1 200px", background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "16px 20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -181,75 +660,178 @@ export const DataQualityPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Main Table: Status sync per akun */}
       <section style={{ background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "8px 20px 20px" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "8px", padding: "14px 0 6px", alignItems: "baseline" }}>
-          <h2 style={{ margin: "0", fontSize: "16px", fontWeight: "600" }}>Status sync per akun</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "8px", padding: "14px 0 10px", alignItems: "baseline" }}>
+          <div>
+            <h2 style={{ margin: "0", fontSize: "16px", fontWeight: "600" }}>Status sync per akun</h2>
+            <div style={{ fontSize: "12px", color: "#5B6672", marginTop: "2px" }}>
+              Otorisasi akun Instagram &amp; TikTok diperlukan sebelum data analitik disinkronkan dari platform resmi.
+            </div>
+          </div>
           <span style={{ fontSize: "13px", color: "#5B6672" }}>Kegagalan sync tercatat dan dapat dicoba ulang</span>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px", minWidth: "900px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px", minWidth: "980px" }}>
             <thead>
               <tr style={{ textAlign: "left", color: "#5B6672", fontSize: "12px", letterSpacing: ".04em", textTransform: "uppercase" }}>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Akun</th>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Kandidat</th>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Sync terakhir</th>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Status sync</th>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Kualitas data</th>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Catatan</th>
-                <th style={{ padding: "10px", borderBottom: "1px solid #DDE1DA" }}>Aksi</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA" }}>Akun</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA" }}>Kandidat</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA" }}>Sync terakhir</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA" }}>Status sync</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA" }}>Kualitas data</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA" }}>Catatan</th>
+                <th style={{ padding: "12px 10px", borderBottom: "1px solid #DDE1DA", textAlign: "left" }}>Aksi Otorisasi &amp; Sync</th>
               </tr>
             </thead>
             <tbody>
               {accounts.map((acc, idx) => {
                 const isLast = idx === accounts.length - 1;
+                const isInstagram = acc.platform === 'INSTAGRAM';
                 const canRetry = acc.syncStatus === 'Gagal' || acc.syncStatus === 'Retry terjadwal';
+
                 return (
                   <tr key={acc.id}>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
-                      <Link to="/accounts/ACC-0001">{acc.name}</Link>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {isInstagram ? <InstagramIcon size={16} /> : <TikTokIcon size={16} />}
+                        <Link to="/accounts/ACC-0001" style={{ fontWeight: 500, color: '#17212B', textDecoration: 'none' }}>
+                          {acc.name}
+                        </Link>
+                      </div>
                     </td>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
                       {acc.candidate}
                     </td>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC", fontSize: "13px" }}>
                       {acc.lastSync}
                     </td>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
                       <span style={{
-                        padding: "2px 9px",
+                        padding: "3px 10px",
                         borderRadius: "999px",
                         background: acc.syncStatus === 'Berhasil' ? '#E2F1E6' : acc.syncStatus === 'Syncing...' ? '#E0EFF1' : acc.syncStatus === 'Gagal' ? '#FBE4E1' : '#FBEFD6',
                         color: acc.syncStatus === 'Berhasil' ? '#1F5E34' : acc.syncStatus === 'Syncing...' ? '#0B4A52' : acc.syncStatus === 'Gagal' ? '#8E2420' : '#7A4A00',
                         fontSize: "12px",
-                        fontWeight: "500"
+                        fontWeight: "600"
                       }}>
                         {acc.syncStatus}
                       </span>
                     </td>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
                       <span style={{
-                        padding: "2px 9px",
+                        padding: "3px 10px",
                         borderRadius: "999px",
                         background: acc.quality === 'Complete' ? '#E2F1E6' : acc.quality === 'Partial' ? '#FBEFD6' : acc.quality === 'Insufficient' ? '#E9ECEF' : '#FBE4E1',
                         color: acc.quality === 'Complete' ? '#1F5E34' : acc.quality === 'Partial' ? '#7A4A00' : acc.quality === 'Insufficient' ? '#3B4651' : '#8E2420',
                         fontSize: "12px",
-                        fontWeight: "500"
+                        fontWeight: "600"
                       }}>
                         {acc.quality}
                       </span>
                     </td>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC", color: "#5B6672" }}>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC", color: "#5B6672", fontSize: "13px" }}>
                       {acc.notes}
                     </td>
-                    <td style={{ padding: "10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC" }}>
-                      {canRetry && (
-                        <button
-                          type="button"
-                          onClick={() => handleRetrySingle(acc.id)}
-                          style={{ height: "32px", padding: "0 12px", border: "1px solid #0E5A63", borderRadius: "8px", background: "#fff", color: "#0E5A63", fontSize: "13px", fontWeight: "600", fontFamily: "inherit", cursor: "pointer" }}
-                        >
-                          Retry
-                        </button>
+                    <td style={{ padding: "12px 10px", borderBottom: isLast ? "none" : "1px solid #EEF0EC", whiteSpace: "nowrap" }}>
+                      {acc.isLoggedIn ? (
+                        /* ALREADY LOGGED IN: Displays "Sudah Login" badge button + Sync action */
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => setConnectedInfoAccount(acc)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              height: '32px',
+                              padding: '0 12px',
+                              borderRadius: '6px',
+                              background: '#E2F1E6',
+                              border: '1px solid #B8DEC0',
+                              color: '#1F5E34',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              fontFamily: 'inherit'
+                            }}
+                            title="Klik untuk melihat detail koneksi akun"
+                          >
+                            {isInstagram ? <InstagramIcon size={14} /> : <TikTokIcon size={14} />}
+                            <span>✓ Sudah Login</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRetrySingle(acc.id)}
+                            disabled={acc.syncStatus === 'Syncing...'}
+                            style={{
+                              height: '32px',
+                              padding: '0 12px',
+                              borderRadius: '6px',
+                              border: '1px solid #0E5A63',
+                              background: '#fff',
+                              color: '#0E5A63',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              cursor: acc.syncStatus === 'Syncing...' ? 'wait' : 'pointer',
+                              fontFamily: 'inherit'
+                            }}
+                            title="Sinkronkan data terbaru dari platform"
+                          >
+                            {acc.syncStatus === 'Syncing...' ? 'Syncing...' : 'Sync'}
+                          </button>
+                        </div>
+                      ) : (
+                        /* NOT LOGGED IN: Displays Login button with Instagram or TikTok icon */
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenAuthModal(acc)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              height: '32px',
+                              padding: '0 12px',
+                              borderRadius: '6px',
+                              background: isInstagram
+                                ? 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)'
+                                : '#000',
+                              border: 'none',
+                              color: '#fff',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              fontFamily: 'inherit',
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.18)'
+                            }}
+                            title={isInstagram ? "Login dan otorisasi akun Instagram" : "Login dan otorisasi akun TikTok"}
+                          >
+                            {isInstagram ? <InstagramIcon size={14} white /> : <TikTokIcon size={14} white />}
+                            <span>{isInstagram ? 'Login Instagram' : 'Login TikTok'}</span>
+                          </button>
+
+                          {canRetry && (
+                            <button
+                              type="button"
+                              onClick={() => handleRetrySingle(acc.id)}
+                              style={{
+                                height: '32px',
+                                padding: '0 10px',
+                                border: '1px solid #DDE1DA',
+                                borderRadius: '6px',
+                                background: '#fff',
+                                color: '#5B6672',
+                                fontSize: '12px',
+                                fontWeight: 500,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Retry
+                            </button>
+                          )}
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -260,6 +842,7 @@ export const DataQualityPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Anomaly & AI Review Sections */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "flex-start" }}>
         <section style={{ flex: "2 1 560px", minWidth: "0", background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "20px" }}>
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "8px", alignItems: "baseline" }}>
@@ -279,64 +862,67 @@ export const DataQualityPage: React.FC = () => {
                 <span style={{
                   padding: "2px 9px",
                   borderRadius: "999px",
-                  background: anom.reviewed ? '#E2F1E6' : '#FBEFD6',
-                  color: anom.reviewed ? '#1F5E34' : '#7A4A00',
+                  background: anom.reviewed ? "#E2F1E6" : "#FBEFD6",
+                  color: anom.reviewed ? "#1F5E34" : "#7A4A00",
                   fontSize: "12px",
                   fontWeight: "500"
                 }}>
-                  {anom.reviewed ? 'Ditinjau' : 'Belum ditinjau'}
+                  {anom.reviewed ? "Ditinjau" : "Perlu ditinjau"}
                 </span>
-                {anom.reviewed ? (
-                  <span style={{ fontSize: "13px", color: "#5B6672" }}>{anom.reviewedBy}</span>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {anom.link && (
-                      <Link to={anom.link.to} style={{ fontSize: "13px" }}>{anom.link.text}</Link>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleReviewAnomaly(anom.id)}
-                      style={{ height: "34px", padding: "0 12px", border: "1px solid #B9C1C9", borderRadius: "8px", background: "#fff", fontSize: "13px", fontFamily: "inherit", cursor: "pointer" }}
-                    >
-                      Tandai ditinjau
-                    </button>
-                  </div>
+                {anom.reviewedBy && (
+                  <span style={{ fontSize: "12px", color: "#5B6672" }}>{anom.reviewedBy}</span>
+                )}
+                {anom.link && (
+                  <Link to={anom.link.to} style={{ fontSize: "13px", color: "#0E5A63", fontWeight: "500", textDecoration: "none" }}>
+                    {anom.link.text} ›
+                  </Link>
+                )}
+                {!anom.reviewed && (
+                  <button
+                    type="button"
+                    onClick={() => handleReviewAnomaly(anom.id)}
+                    style={{ height: "30px", padding: "0 10px", border: "1px solid #B9C1C9", borderRadius: "6px", background: "#fff", color: "#17212B", fontSize: "12px", fontWeight: "500", fontFamily: "inherit", cursor: "pointer" }}
+                  >
+                    Tandai selesai
+                  </button>
                 )}
               </div>
             ))}
           </div>
         </section>
 
-        <section style={{ flex: "1 1 320px", minWidth: "0", background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
-          <h2 style={{ margin: "0", fontSize: "16px", fontWeight: "600" }}>Antrean analisis AI</h2>
-          <div style={{ fontSize: "13px", color: "#5B6672", lineHeight: "1.5" }}>Analisis berjalan asinkron, tidak menghambat tampilan dashboard.</div>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #EEF0EC", fontSize: "14px" }}>
-            <span>Dalam antrean</span>
-            <b style={{ fontWeight: "600" }}>14</b>
+        <section style={{ flex: "1 1 320px", background: "#fff", border: "1px solid #DDE1DA", borderRadius: "10px", padding: "20px" }}>
+          <h2 style={{ margin: "0 0 10px", fontSize: "16px", fontWeight: "600" }}>Antrean analisis AI</h2>
+          <div style={{ fontSize: "13px", color: "#5B6672", lineHeight: "1.5" }}>
+            Analisis berjalan asinkron, tidak menghambat tampilan dashboard.
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #EEF0EC", fontSize: "14px" }}>
-            <span>Sedang berjalan</span>
-            <b style={{ fontWeight: "600" }}>2</b>
+          <div style={{ margin: "14px 0", display: "flex", flexDirection: "column", gap: "8px", fontSize: "13px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#5B6672" }}>Dalam antrean</span>
+              <span style={{ fontWeight: "600" }}>3</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#5B6672" }}>Sedang diproses</span>
+              <span style={{ fontWeight: "600" }}>1</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#5B6672" }}>Selesai (24 jam)</span>
+              <span style={{ fontWeight: "600" }}>48</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#5B6672" }}>Gagal (perlu retry)</span>
+              <span style={{ fontWeight: "600", color: aiQueueFailed > 0 ? "#8E2420" : "#17212B" }}>{aiQueueFailed}</span>
+            </div>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #EEF0EC", fontSize: "14px" }}>
-            <span>Selesai hari ini</span>
-            <b style={{ fontWeight: "600" }}>61</b>
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", fontSize: "14px" }}>
-            <span>Gagal</span>
-            <span style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-              <b style={{ fontWeight: "600" }}>{aiQueueFailed}</b>
-              {aiQueueFailed > 0 && (
-                <button
-                  type="button"
-                  onClick={handleRetryAi}
-                  style={{ height: "30px", padding: "0 12px", border: "1px solid #0E5A63", borderRadius: "8px", background: "#fff", color: "#0E5A63", fontSize: "13px", fontWeight: "600", fontFamily: "inherit", cursor: "pointer" }}
-                >
-                  Retry
-                </button>
-              )}
-            </span>
-          </div>
+          {aiQueueFailed > 0 && (
+            <button
+              type="button"
+              onClick={handleRetryAi}
+              style={{ width: "100%", height: "36px", border: "1px solid #8E2420", borderRadius: "8px", background: "#fff", color: "#8E2420", fontSize: "13px", fontWeight: "600", fontFamily: "inherit", cursor: "pointer" }}
+            >
+              Retry antrean gagal
+            </button>
+          )}
         </section>
       </div>
     </main>
