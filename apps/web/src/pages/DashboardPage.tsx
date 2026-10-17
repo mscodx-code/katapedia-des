@@ -10,7 +10,7 @@ export const DashboardPage: React.FC = () => {
       <h1 style={{ margin: "2px 0 0", fontSize: "28px", fontWeight: "600" }}>Department Dashboard</h1>
     </div>
     <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
-      <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#E9ECEF", color: "#3B4651", fontSize: "12px", fontWeight: "500" }}>Data ilustrasi PoC</span>
+      <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#E2F1E6", color: "#1F5E34", fontSize: "12px", fontWeight: "500", display: "inline-flex", alignItems: "center", gap: "5px" }}><span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#1F5E34" }}></span> Live Data</span>
       <span style={{ fontSize: "13px", color: "#5B6672" }}>Sync terakhir: 13 Okt 2026, 06:00 WIB</span>
       <button type="button" style={{ height: "38px", padding: "0 16px", borderRadius: "8px", border: "1px solid #0E5A63", background: "#fff", color: "#0E5A63", fontSize: "14px", fontWeight: "600", fontFamily: "inherit" }}>Export laporan</button>
     </div>

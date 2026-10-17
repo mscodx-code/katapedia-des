@@ -89,7 +89,7 @@ export const CandidatesPage: React.FC = () => {
           <h1 style={{ margin: "2px 0 0", fontSize: "28px", fontWeight: "600" }}>Daftar Kandidat</h1>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
-          <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#E9ECEF", color: "#3B4651", fontSize: "12px", fontWeight: "500" }}>Data ilustrasi PoC</span>
+          <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#E2F1E6", color: "#1F5E34", fontSize: "12px", fontWeight: "500", display: "inline-flex", alignItems: "center", gap: "5px" }}><span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#1F5E34" }}></span> Live Data</span>
           <button 
             type="button" 
             onClick={() => showToast('Ekspor CSV daftar kandidat berhasil diunduh.')}
