@@ -281,9 +281,37 @@ export const ContentExplorerPage: React.FC = () => {
   const [formatFilter, setFormatFilter] = useState('Semua format');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Content Publishing Modal States
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [publishMediaType, setPublishMediaType] = useState<'IMAGE' | 'VIDEO'>('IMAGE');
+  const [publishCaption, setPublishCaption] = useState(
+    'Kunjungan dialog bersama paguyuban pedagang pasar tradisional pagi ini. Program stabilisasi harga kebutuhan pokok dan revitalisasi fasilitas menjadi prioritas bersama! #PasarTradisional #PilkadaDamai #EkonomiWarga'
+  );
+  const [publishMediaUrl, setPublishMediaUrl] = useState('https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800');
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'creating_container' | 'publishing' | 'success'>('idle');
+  const [publishedMediaId, setPublishedMediaId] = useState<string | null>(null);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handlePublishContent = () => {
+    setPublishStatus('creating_container');
+    setTimeout(() => {
+      setPublishStatus('publishing');
+      setTimeout(() => {
+        setPublishStatus('success');
+        setPublishedMediaId('18049281092830192');
+        showToast('✓ Postingan berhasil dipublikasikan ke Instagram @katapedia.id!');
+      }, 1200);
+    }, 1000);
+  };
+
+  const handleResetPublishModal = () => {
+    setIsPublishModalOpen(false);
+    setPublishStatus('idle');
+    setPublishedMediaId(null);
   };
 
   const handleSearchHashtag = (tag: string) => {
@@ -332,6 +360,275 @@ export const ContentExplorerPage: React.FC = () => {
         </div>
       )}
 
+      {/* MODAL: INSTAGRAM CONTENT PUBLISHING */}
+      {isPublishModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '16px'
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '560px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              overflow: 'hidden',
+              fontFamily: "'IBM Plex Sans', system-ui, sans-serif"
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #EEF0EC', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '22px' }}>📸</span>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: '#17212B' }}>
+                    Publikasikan Postingan ke Instagram
+                  </h3>
+                  <div style={{ fontSize: '12px', color: '#5B6672' }}>
+                    Akun: <strong style={{ color: '#0E5A63' }}>@katapedia.id</strong> · Izin: <code>instagram_business_content_publish</code>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleResetPublishModal}
+                style={{ background: 'none', border: 'none', fontSize: '18px', color: '#5B6672', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {publishStatus === 'success' ? (
+                /* Success View */
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'center', padding: '16px 0' }}>
+                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#E2F1E6', color: '#1F5E34', fontSize: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+                    ✓
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#1F5E34' }}>
+                      Postingan Berhasil Dipublikasikan ke Instagram!
+                    </h4>
+                    <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#5B6672', lineHeight: 1.5 }}>
+                      Konten telah tayang di feed akun resmi <strong>@katapedia.id</strong> melalui endpoint resmi Meta Graph API.
+                    </p>
+                  </div>
+
+                  <div style={{ background: '#F8F9FA', border: '1px solid #E9ECEF', borderRadius: '8px', padding: '12px', fontSize: '12px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div><strong>Media ID Instagram:</strong> <code style={{ color: '#0E5A63' }}>{publishedMediaId}</code></div>
+                    <div><strong>Status API:</strong> <span style={{ color: '#28A745', fontWeight: 600 }}>200 OK (PUBLISHED)</span></div>
+                    <div><strong>Tipe Konten:</strong> {publishMediaType === 'IMAGE' ? 'Foto Feed' : 'Video Reels'}</div>
+                    <div><strong>Waktu Rilis:</strong> Baru saja (Live)</div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                    <a
+                      href="https://www.instagram.com/katapedia.id"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        flex: 1,
+                        height: '42px',
+                        borderRadius: '8px',
+                        background: '#0E5A63',
+                        color: '#fff',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      Buka di Instagram ↗
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleResetPublishModal}
+                      style={{
+                        flex: 1,
+                        height: '42px',
+                        borderRadius: '8px',
+                        border: '1px solid #B9C1C9',
+                        background: '#fff',
+                        color: '#17212B',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Form View */
+                <>
+                  {/* Endpoint Explanation */}
+                  <div style={{ background: '#F0F9F5', border: '1px solid #C6EAD8', borderRadius: '8px', padding: '10px 14px', fontSize: '12px', color: '#135436' }}>
+                    <strong>Alur Meta Content Publishing API:</strong><br />
+                    1. <code>POST /17841405392019481/media</code> (Membuat Container Media)<br />
+                    2. <code>POST /17841405392019481/media_publish</code> (Mempublikasikan Container ke Feed)
+                  </div>
+
+                  {/* Format Selector */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#17212B' }}>Format Konten:</label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setPublishMediaType('IMAGE')}
+                        style={{
+                          flex: 1,
+                          padding: '10px',
+                          borderRadius: '8px',
+                          border: publishMediaType === 'IMAGE' ? '2px solid #0E5A63' : '1px solid #DDE1DA',
+                          background: publishMediaType === 'IMAGE' ? '#E0EFF1' : '#fff',
+                          color: publishMediaType === 'IMAGE' ? '#0B4A52' : '#3B4651',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        🖼️ Foto Feed (Single Image)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPublishMediaType('VIDEO')}
+                        style={{
+                          flex: 1,
+                          padding: '10px',
+                          borderRadius: '8px',
+                          border: publishMediaType === 'VIDEO' ? '2px solid #0E5A63' : '1px solid #DDE1DA',
+                          background: publishMediaType === 'VIDEO' ? '#E0EFF1' : '#fff',
+                          color: publishMediaType === 'VIDEO' ? '#0B4A52' : '#3B4651',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        🎬 Video Reels (Vertical)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Media URL */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#17212B' }}>
+                      {publishMediaType === 'IMAGE' ? 'URL Gambar Publik (image_url):' : 'URL Video Publik (video_url):'}
+                    </label>
+                    <input
+                      type="text"
+                      value={publishMediaUrl}
+                      onChange={(e) => setPublishMediaUrl(e.target.value)}
+                      style={{
+                        height: '38px',
+                        padding: '0 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #B9C1C9',
+                        fontSize: '13px',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                  </div>
+
+                  {/* Caption Field */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontSize: '13px', fontWeight: 600, color: '#17212B' }}>Caption Postingan (caption):</label>
+                      <span style={{ fontSize: '11px', color: '#5B6672' }}>{publishCaption.length} / 2200 karakter</span>
+                    </div>
+                    <textarea
+                      rows={4}
+                      value={publishCaption}
+                      onChange={(e) => setPublishCaption(e.target.value)}
+                      style={{
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #B9C1C9',
+                        fontSize: '13px',
+                        fontFamily: 'inherit',
+                        lineHeight: 1.45,
+                        resize: 'vertical'
+                      }}
+                    />
+                  </div>
+
+                  {/* Publishing Status Progress Bar */}
+                  {publishStatus !== 'idle' && (
+                    <div style={{ padding: '12px', background: '#F8FAF9', borderRadius: '8px', border: '1px solid #E3E7E1', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#0E5A63', fontWeight: 500 }}>
+                      <span style={{ fontSize: '16px' }}>⏳</span>
+                      {publishStatus === 'creating_container' && 'Tahap 1/2: Membuat Media Container di Instagram...'}
+                      {publishStatus === 'publishing' && 'Tahap 2/2: Mempublikasikan Container ke Feed @katapedia.id...'}
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      onClick={handleResetPublishModal}
+                      disabled={publishStatus !== 'idle'}
+                      style={{
+                        flex: 1,
+                        height: '42px',
+                        borderRadius: '8px',
+                        border: '1px solid #DDE1DA',
+                        background: '#fff',
+                        color: '#3B4651',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handlePublishContent}
+                      disabled={publishStatus !== 'idle' || !publishCaption.trim()}
+                      style={{
+                        flex: 2,
+                        height: '42px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                        color: '#fff',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        cursor: publishStatus !== 'idle' ? 'wait' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 12px rgba(188, 24, 136, 0.25)'
+                      }}
+                    >
+                      {publishStatus === 'idle' ? 'Publikasikan ke Instagram Feed' : 'Memproses Publikasi API...'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <header style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: "16px" }}>
         <div>
           <div style={{ fontSize: "13px", color: "#5B6672" }}>Pemantauan &amp; Analisis Konten</div>
@@ -341,6 +638,29 @@ export const ContentExplorerPage: React.FC = () => {
           <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#E2F1E6", color: "#1F5E34", fontSize: "12px", fontWeight: "500", display: "inline-flex", alignItems: "center", gap: "5px" }}>
             <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#1F5E34" }}></span> Live Data
           </span>
+          <button 
+            type="button" 
+            onClick={() => setIsPublishModalOpen(true)}
+            style={{ 
+              height: "38px", 
+              padding: "0 16px", 
+              borderRadius: "8px", 
+              border: "none", 
+              background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)", 
+              color: "#fff", 
+              fontSize: "13px", 
+              fontWeight: "600", 
+              fontFamily: "inherit", 
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              boxShadow: "0 2px 8px rgba(188, 24, 136, 0.2)"
+            }}
+          >
+            <span>+ Buat &amp; Publikasikan Postingan</span>
+            <span style={{ fontSize: "11px", background: "rgba(255,255,255,0.25)", padding: "1px 6px", borderRadius: "10px" }}>IG API</span>
+          </button>
           <button 
             type="button" 
             onClick={() => showToast('Ekspor data berhasil diunduh.')}
